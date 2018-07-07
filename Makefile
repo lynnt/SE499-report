@@ -3,3 +3,5 @@ all:
 	bibtex se499-report
 	pdflatex se499-report.tex
 	pdflatex se499-report.tex
+count:
+	detex *.tex | wc -w
