@@ -3,6 +3,10 @@
 %% generated with the docstrip utility.
 %%
 %% Created by Steve R. Gunn, modified by Sunil Patel: www.sunilpatel.co.uk
+\usepackage{etoolbox} % for robustify
+\DeclareRobustCommand{\CC}{C\raisebox{-.1ex}{\texttt{++ }}}
+\DeclareRobustCommand{\CFA}{C$\forall$}
+\DeclareRobustCommand{\uCPP}{$\mu$\CC}
 
 \NeedsTeXFormat{LaTeX2e}[1996/12/01]
 \ProvidesClass{Thesis}
@@ -168,8 +172,8 @@
                 {RESEARCH GROUP NAME (IN BLOCK CAPITALS)}}
                 {RESEARCH GROUP NAME (IN BLOCK CAPITALS)}}
 \faculty     {\texorpdfstring{\href{Faculty Web Site URL Here (include http://)}
-                {Faculty Name}}
-                {Faculty Name}}
+                {Faculty of Mathematics and Faculty of Engineering}}
+                {Faculty of Mathematics and Faculty of Engineering}}
 \FACULTY     {\texorpdfstring{\href{Faculty Web Site URL Here (include http://)}
                 {FACULTY NAME (IN BLOCK CAPITALS)}}
                 {FACULTY NAME (IN BLOCK CAPITALS)}}
@@ -177,7 +181,7 @@
 \subject     {}
 \keywords    {}
 \renewcommand\maketitle{
-  \btypeout{Title Page}
+  \btypeout{Title page}
   \hypersetup{pdftitle={\@title}}
   \hypersetup{pdfsubject=\subjectname}
   \hypersetup{pdfauthor=\authornames}

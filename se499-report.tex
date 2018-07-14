@@ -11,15 +11,13 @@
 \usepackage{verbatim}  % Needed for the "comment" environment to make LaTeX comments
 \usepackage{vector}  % Allows "\bvec{}" and "\buvec{}" for "blackboard" style bold vectors in maths
 \hypersetup{urlcolor=blue, colorlinks=true}  % Colours hyperlinks in blue, but this can be distracting if there are many links.
-\usepackage{etoolbox} % for robustify
-\DeclareRobustCommand{\CC}{C\raisebox{-.1ex}{\texttt{++ }}}
 
 %% ----------------------------------------------------------------
 \begin{document}
 \frontmatter      % Begin Roman style (i, ii, iii, iv...) page numbering
 
 % Set up the Title Page
-\title  {Providing GDB support for $\mu$\CC and C$\forall$}
+\title{Provide GDB support for \uCPP and \CFA}
 \authors  {\texorpdfstring
             {\href{tmltran@uwaterloo.ca}{Thi My Linh Tran}}
             {Thi My Linh Tran}
@@ -111,7 +109,7 @@ The Thesis Abstract is written here (and usually kept to just this page). The pa
 \addtocontents{toc}{\vspace{1em}}  % Add a gap in the Contents, for aesthetics
 
 I would like to thank Professor Peter Buhr and Thierry
-Delisle for his guidance throughout the development of this project.
+Delisle for their guidance throughout the development of this project.
 
 }
 \clearpage  % End of the Acknowledgements
@@ -145,11 +143,11 @@ Delisle for his guidance throughout the development of this project.
 
 %% ----------------------------------------------------------------
 \clearpage  % Start a new page
-\lhead{\emph{Physical Constants}}  % Set the left side page header to "Physical Constants"
-\listofconstants{lrcl}  % Include a list of Physical Constants (a four column table)
+%\lhead{\emph{Physical Constants}}  % Set the left side page header to "Physical Constants"
+%\listofconstants{lrcl}  % Include a list of Physical Constants (a four column table)
 {
 % Constant Name & Symbol & = & Constant Value (with units) \\
-Speed of Light & $c$ & $=$ & $2.997\ 924\ 58\times10^{8}\ \mbox{ms}^{-\mbox{s}}$ (exact)\\
+%Speed of Light & $c$ & $=$ & $2.997\ 924\ 58\times10^{8}\ \mbox{ms}^{-\mbox{s}}$ (exact)\\
 
 }
 
@@ -159,10 +157,10 @@ Speed of Light & $c$ & $=$ & $2.997\ 924\ 58\times10^{8}\ \mbox{ms}^{-\mbox{s}}$
 \listofnomenclature{lll}  % Include a list of Symbols (a three column table)
 {
 % symbol & name & unit \\
-$a$ & distance & m \\
-$P$ & power & W (Js$^{-1}$) \\
-& & \\ % Gap to separate the Roman symbols from the Greek
-$\omega$ & angular frequency & rads$^{-1}$ \\
+%$a$ & distance & m \\
+%$P$ & power & W (Js$^{-1}$) \\
+%& & \\ % Gap to separate the Roman symbols from the Greek
+%$\omega$ & angular frequency & rads$^{-1}$ \\
 }
 %% ----------------------------------------------------------------
 % End of the pre-able, contents and lists of things
@@ -182,9 +180,15 @@ $\omega$ & angular frequency & rads$^{-1}$ \\
 
 \input{Chapters/Introduction} % Introduction
 
-\input{Chapters/Languages} % Background Theory
+$% Background
 
-%\input{Chapters/Chapter3} % Experimental Setup
+\input{Chapters/uCPP}
+
+\input{Chapters/CFA}
+
+% Real work done
+
+\input{Chapters/GDB}
 
 %\input{Chapters/Chapter4} % Experiment 1
 
@@ -201,7 +205,8 @@ $\omega$ & angular frequency & rads$^{-1}$ \\
 
 \appendix % Cue to tell LaTeX that the following 'chapters' are Appendices
 
-\input{Appendices/AppendixA}	% Appendix Title
+% TODO: remove if want appendex
+%\input{Appendices/AppendixA}	% Appendix Title
 
 %\input{Appendices/AppendixB} % Appendix Title
 

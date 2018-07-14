@@ -1,7 +1,10 @@
+filename="se499-report"
 all:
-	pdflatex se499-report.tex
-	bibtex se499-report
-	pdflatex se499-report.tex
-	pdflatex se499-report.tex
+	pdflatex ${filename}.tex
+	bibtex ${filename}
+	pdflatex ${filename}.tex
+	pdflatex ${filename}.tex
 count:
 	detex *.tex | wc -w
+compile:
+	latexmk -pvc -pdf ${filename}.tex
