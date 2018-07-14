@@ -11,13 +11,15 @@
 \usepackage{verbatim}  % Needed for the "comment" environment to make LaTeX comments
 \usepackage{vector}  % Allows "\bvec{}" and "\buvec{}" for "blackboard" style bold vectors in maths
 \hypersetup{urlcolor=blue, colorlinks=true}  % Colours hyperlinks in blue, but this can be distracting if there are many links.
+\usepackage{etoolbox} % for robustify
+\DeclareRobustCommand{\CC}{C\raisebox{-.1ex}{\texttt{++ }}}
 
 %% ----------------------------------------------------------------
 \begin{document}
 \frontmatter      % Begin Roman style (i, ii, iii, iv...) page numbering
 
 % Set up the Title Page
-\title  {Thesis Title}
+\title  {Providing GDB support for $\mu$\CC and C$\forall$}
 \authors  {\texorpdfstring
             {\href{tmltran@uwaterloo.ca}{Thi My Linh Tran}}
             {Thi My Linh Tran}
@@ -180,7 +182,7 @@ $\omega$ & angular frequency & rads$^{-1}$ \\
 
 \input{Chapters/Introduction} % Introduction
 
-%\input{Chapters/Chapter2} % Background Theory
+\input{Chapters/Languages} % Background Theory
 
 %\input{Chapters/Chapter3} % Experimental Setup
 
