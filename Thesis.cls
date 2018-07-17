@@ -6,6 +6,7 @@
 \usepackage{etoolbox} % for robustify
 \usepackage[dvipsnames]{xcolor}
 \usepackage{listings}
+\lstset{escapeinside={<@}{@>}}
 \DeclareRobustCommand{\CC}{C\raisebox{-.1ex}{\texttt{++}}}
 \DeclareRobustCommand{\CCS}{C\raisebox{-.1ex}{\texttt{++}} }
 \DeclareRobustCommand{\CFA}{C$\forall$}
