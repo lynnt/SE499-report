@@ -63,7 +63,7 @@ parameters and returns.
 void f(<@\textcolor{red}{void}@>);              // (1)
 void f(<@\textcolor{red}{char}@>);              // (2)
 <@\textcolor{red}{char}@> f(void);              // (3)
-<@\textcolor{red}{[int,double]}@> f();          // (4)
+<@\textcolor{red}{[int,double]}@> f();           // (4)
 
 f();                        // pick (1)
 f('a');                     // pick (2)
@@ -87,14 +87,14 @@ cannot be preserved. This behaves as same as how \CCS behaves.
         commentstyle=\color{ForestGreen}\ttfamily,
         morecomment=[l][\color{magneta}]{\#}}
 \begin{lstlisting}
-int <@\texcolor{red}{++?}@>(int op);            // unary prefix increment
+int <@\textcolor{red}{++?}@>(int op);           // unary prefix increment
 int <@\textcolor{red}{?++}@>(int op);           // unary postfix increment
 int <@\textcolor{red}{?+?}@>(int op1, int op2); // unary postfix increment
 
 struct A { double x, double y }
 
 // overload operator plus-assignment
-A ?+?(S a, S b) {
+A <@\textcolor{red}{?+?}@>(S a, S b) {
     return (S) {a.x + b.x, a.y + b.y};
 }
 \end{lstlisting}
