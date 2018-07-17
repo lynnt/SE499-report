@@ -1,6 +1,5 @@
 \chapter{Extending GDB for \uCPP}
 
-
 \textcolor{red}{TODO}
 \begin{itemize}
 \item Summary design at a high level
@@ -14,6 +13,7 @@ requirements you outlined in problem definition section.
 \item State how the project should move ahead
 \end{itemize}
 
+\section{Design Constraints}
 As mentioned in chapter \ref{GDB}, there are many ways to extend GDB. However,
 it is best if the selected mechanism is simple, easy to implement and yet
 versatile.
@@ -25,6 +25,11 @@ it more versatile and easy to work with.
 
 As mentioned in chapter \ref{uCPP}, there are concepts such as clusters and
 virtual processors in \uCPP. It is useful to have built-in GDB commands to list
-all the existing clusters and virtual processors. This enables developers an
-opportunity to understand what is going on in the system, and it is also the
-entry point for switching between tasks.
+all the existing clusters and virtual processors. This provides developers
+a mechanism to understand what is going on in the system. Furthermore, when users
+press Ctrl-C or a failure occurs when running a \uCPPS program, one does not
+know which task the program is in, and which cluster that task falls into. It is
+useful to be able see this information.
+
+\section{Design Implementation}
+Seven user-defined commands are implemented as an extension in GDB for \uCPP.
