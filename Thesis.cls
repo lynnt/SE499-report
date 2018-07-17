@@ -5,6 +5,7 @@
 %% Created by Steve R. Gunn, modified by Sunil Patel: www.sunilpatel.co.uk
 \usepackage{etoolbox} % for robustify
 \usepackage[dvipsnames]{xcolor}
+\usepackage{listings}
 \DeclareRobustCommand{\CC}{C\raisebox{-.1ex}{\texttt{++}}}
 \DeclareRobustCommand{\CCS}{C\raisebox{-.1ex}{\texttt{++}} }
 \DeclareRobustCommand{\CFA}{C$\forall$}
@@ -236,16 +237,16 @@
   \global\let\and\relax
   \cleardoublepage
 }
-\newenvironment{abstract}
+\newenvironment{preface}
 {
-  \btypeout{Abstract Page}
+  \btypeout{Preface}
   \thispagestyle{empty}
   \null\vfil
   \begin{center}
     \setlength{\parskip}{0pt}
     {\normalsize \UNIVNAME \par}
     \bigskip
-    {\huge{\textit{Abstract}} \par}
+    {\huge{\textit{Preface}} \par}
     \bigskip
     {\normalsize \facname \par}
     {\normalsize \deptname \par}

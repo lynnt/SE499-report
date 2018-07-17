@@ -20,3 +20,41 @@ problems known in C.
 
 \section{Overloading}
 \textbf{\textcolor{red}{TODO}}: write this please
+\textbf{\textcolor{red}{TODO}}: add an example piece of code to demonstrate what
+is overloading
+
+Overloading is when a compiler that allows defining two different routines with
+the same name, but there is a
+In most programming languages, they only allow operator and/or function overloading.
+In addition to those, \uCPP also supports variables and literal 0/1 overloading.
+
+\subsection{Variables}
+Variables in the same block are allowed to have the same name as long as it is
+differentiated by type. An assignment of a new variable to the same variable is
+deferred from type.
+
+\begin{frame}
+\frametitle{}
+\lstset{language=C++,
+        basicstyle=\ttfamily,
+        keywordstyle=\color{blue}\ttfamily,
+        stringstyle=\color{red}\ttfamily,
+        commentstyle=\color{green}\ttfamily,
+        morecomment=[l][\color{magneta}]{\#}}
+\begin{lstlisting}
+short int MAX = 3;
+int MAX = 4;
+double MAX = 1.0;
+
+// select variable MAX based on its left-hand type
+short int s = MAX;
+int max = MAX;
+double max = MAX;
+\end{lstlisting}
+\end{frame}
+
+\subsection{Routine}
+\textbf{\textcolor{red}{TODO}}: provide examples
+
+\subsection{Operator}
+\textbf{\textcolor{red}{TODO}}: provide examples

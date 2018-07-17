@@ -1,29 +1,32 @@
 \chapter{Introduction} \label{introduction}
 
-Computer programming languages allow human to instruct computers to perform an
+Computer programming languages allow humans to instruct computers to perform an
 action in a language they understand. All these languages eventually translate
 to binary, in which is a representation of number 0 and 1. New languages are
 invented to perform a particular task better, or to be a replacement with
-additional features and performance that existing language cannot do as well
+additional features and performance that existing language cannot do as well or
+to improve developers' productivity.
 \cite{Reference1}.
 
-\section{Background}
-This report talks about how to add GNU debugger support for \uCPPS and \CFA.
+In the same way, debugger is a productivity tool to aid developers in testing
+and finding bugs in their program. By definition, debugger is a computing program that runs
+any programm written in one of the supported languages and allows developers to
+monitor, examine states and stops the program for further investigation. In
+particular, this report talks about how to add GNU debugger support for \uCPPS
+and \CFA.
 
 \section{Problem Statement}
-
-This report discusses about adding GDB support for two different languages.
-
-First of all, since \uCPPS is a translator, so all the code written in \uCPPS is eventually
+Because \uCPPS is a translator, so all the code written in \uCPPS is eventually
 compiled down to \CC. Additionally, GDB has been supporting \CCS for a long time,
 so most of the work is already done by GNU developers. However, since \uCPPS introduced
 new objects into the language to extend the existing models, GDB has yet learned
-to understand these objects. Therefore, it is not possible to switch between
-tasks. One objective of my research project is to extend GDB to allow switching
+to understand these objects. Therefore, it is not possible to examine the state
+of these objects and switch between tasks. One objective of this research
+project is to extend GDB to allow perform context switch
 between tasks and examine information about structures that only exist in \uCPPS
 such as clusters, processors, etc.
 
-In addition to extending GDB for \uCPPS, another objective of my research project
+In addition to extending GDB for \uCPPS, another objective of this research project
 is to add GDB support for \CFA, which is a new language developing by the
 University of Waterloo Programming Language group. In particular, the project
 adds a new demangler for \CFAS because even though \CFAS is compiled
