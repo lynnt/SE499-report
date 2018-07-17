@@ -17,7 +17,7 @@
 \frontmatter      % Begin Roman style (i, ii, iii, iv...) page numbering
 
 % Set up the Title Page
-\title{Provide GDB support for \uCPP and \CFA}
+\title{Provide GDB support for \uCPPS and \CFA}
 \authors  {\texorpdfstring
             {\href{tmltran@uwaterloo.ca}{Thi My Linh Tran}}
             {Thi My Linh Tran}
@@ -88,9 +88,10 @@ If the quote is taken from someone, their name goes here
 
 \vfill\vfill\vfill\vfill\vfill\vfill\null
 \clearpage  % Funny Quote page ended, start a new page
+\fi
 %% ----------------------------------------------------------------
 % The Abstract Page
-\addtotoc{Abstract}  % Add the "Abstract" page entry to the Contents
+\addtotoc{Preface}  % Add the "Abstract" page entry to the Contents
 \abstract{
 \addtocontents{toc}{\vspace{1em}}  % Add a gap in the Contents, for aesthetics
 
@@ -99,7 +100,6 @@ The Thesis Abstract is written here (and usually kept to just this page). The pa
 }
 
 \clearpage  % Abstract ended, start a new page
-\fi
 %% ----------------------------------------------------------------
 
 \setstretch{1.3}  % Reset the line-spacing to 1.3 for body text (if it has changed)
@@ -137,8 +137,9 @@ Delisle for their guidance throughout the development of this project.
 \listofsymbols{ll}  % Include a list of Abbreviations (a table of two columns)
 {
 % \textbf{Acronym} & \textbf{W}hat (it) \textbf{S}tands \textbf{F}or \\
-\textbf{LAH} & \textbf{L}ist \textbf{A}bbreviations \textbf{H}ere \\
-
+%\textbf{LAH} & \textbf{L}ist \textbf{A}bbreviations \textbf{H}ere \\
+\textbf{GDB} & GNU Debugger \\
+\textbf{API} & \\ Application Programming Interface \\
 }
 
 %% ----------------------------------------------------------------
@@ -183,20 +184,15 @@ Delisle for their guidance throughout the development of this project.
 $% Background
 
 \input{Chapters/uCPP}
-
+\input{Chapters/GDB}
 \input{Chapters/CFA}
 
 % Real work done
 
-\input{Chapters/GDB}
+\input{Chapters/Extensions}
+\input{Chapters/Demangler}
 
-%\input{Chapters/Chapter4} % Experiment 1
-
-%\input{Chapters/Chapter5} % Experiment 2
-
-%\input{Chapters/Chapter6} % Results and Discussion
-
-%\input{Chapters/Chapter7} % Conclusion
+\input{Chapters/Conclusion} % Conclusion
 
 %% ----------------------------------------------------------------
 % Now begin the Appendices, including them as separate files

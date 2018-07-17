@@ -4,9 +4,13 @@
 %%
 %% Created by Steve R. Gunn, modified by Sunil Patel: www.sunilpatel.co.uk
 \usepackage{etoolbox} % for robustify
-\DeclareRobustCommand{\CC}{C\raisebox{-.1ex}{\texttt{++ }}}
+\usepackage[dvipsnames]{xcolor}
+\DeclareRobustCommand{\CC}{C\raisebox{-.1ex}{\texttt{++}}}
+\DeclareRobustCommand{\CCS}{C\raisebox{-.1ex}{\texttt{++}} }
 \DeclareRobustCommand{\CFA}{C$\forall$}
+\DeclareRobustCommand{\CFAS}{C$\forall$ }
 \DeclareRobustCommand{\uCPP}{$\mu$\CC}
+\DeclareRobustCommand{\uCPPS}{$\mu$\CCS}
 
 \NeedsTeXFormat{LaTeX2e}[1996/12/01]
 \ProvidesClass{Thesis}

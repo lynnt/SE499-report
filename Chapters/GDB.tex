@@ -1,4 +1,43 @@
-\chapter{GNU Debugger}
+\chapter{GNU Debugger} \label{GDB}
 
-\section{Mangling}
-\section{Demangling}
+\section{Introduction}
+GBD is the GNU project debugger, which allows users to see what is going on
+inside another program while it executes, or understand what a program was
+doing at the moment it crashed.
+
+GDB can do four main things to help catching bugs:
+\begin{itemize}
+\item Start your program by specifying anything that might affect the
+behaviour.
+\item Make your program stop on specified conditions.
+\item Examine what happened and when the program has stopped.
+\item Change things in the program, so users can experiment with correcting the
+effects of one bug and other bugs.
+\end{itemize}
+
+\section{Stack Frames}
+
+\section{Extensions}
+GDB provides three mechanisms for extending the project. The first is
+composition of GDB commands, the second solution is using Python scripting
+language, and the third one is for defining new aliases of existing commands.
+
+\section{Symbol Handling}
+Symbols are a key part of GDB's operation. Symbols are variables, functions and
+types. GDB has three types of symbol tables.
+\begin{itemize}
+    \item \textcolor{ForestGreen}{full symbol tables (symtabs)}: These contain the main information
+        about symbols and addresses
+    \item \textcolor{ForestGreen} {Partial symbol tables (psymtabs)}: These contain enough information to
+        know when to read the corresponding part of the full symbol table.
+    \item \textcolor{ForestGreen}{Minimal symbol tables (msymtabs)}: These contain information gleaned
+        from non-debugging symbols.
+\end{itemize}
+
+Symbol information for a large program can be very large, and reading of all
+these symbols can be a performance bottlenecks in GDB. This affects user
+experience, so the solution is to construct partial symbol tables consisting of
+only selected symbols, and then expand them to full symbol tables when
+necessary.
+A psymtab is constructed by doing a quick pass over the executable file's
+debugging information.

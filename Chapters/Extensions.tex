@@ -1,0 +1,30 @@
+\chapter{Extending GDB for \uCPP}
+
+
+\textcolor{red}{TODO}
+\begin{itemize}
+\item Summary design at a high level
+\item Describe what design does and how it works along with a scenario for its
+use case
+\item Use subsections to guide through details of design
+\item Start with a section with block diagram that shows major functions/layout
+of design
+\item Evaluate how the solution works by evaluating the design against
+requirements you outlined in problem definition section.
+\item State how the project should move ahead
+\end{itemize}
+
+As mentioned in chapter \ref{GDB}, there are many ways to extend GDB. However,
+it is best if the selected mechanism is simple, easy to implement and yet
+versatile.
+
+Using Python extensions is a good solution for extending GDB given the criteria.
+GDB provides a more extensive API for Python to work with. Additionally, Python
+is a scripting language with built-in data structures and functions, which make
+it more versatile and easy to work with.
+
+As mentioned in chapter \ref{uCPP}, there are concepts such as clusters and
+virtual processors in \uCPP. It is useful to have built-in GDB commands to list
+all the existing clusters and virtual processors. This enables developers an
+opportunity to understand what is going on in the system, and it is also the
+entry point for switching between tasks.

@@ -6,5 +6,7 @@ all:
 	pdflatex ${filename}.tex
 count:
 	detex *.tex | wc -w
+spellcheck:
+	aspell -t -c ${filename}.tex
 compile:
-	latexmk -pvc -pdf ${filename}.tex
+	aspell -t -c ${filename}.tex && latexmk -pvc -pdf ${filename}.tex

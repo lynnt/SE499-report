@@ -1,18 +1,18 @@
-\chapter{\uCPP}
-\CC is a popular programming language.
+\chapter{\uCPP} \label{uCPP}
+\CCS is a popular programming language.
 
 \textbf{\textcolor{red}{TODO}}: write a bit more about \CC
 
 \textbf{\textcolor{red}{TODO}}: rephrase all these stuff in my own word and cite
 
-According to the \uCPP annotated reference manual, \uCPP
-for \CC programming language. This language introduces new ways to facilitate
+According to the \uCPP annotated reference manual, \uCPPS
+for \CCS programming language. This language introduces new ways to facilitate
 control flow, and an addition of lightweight concurrency objects on
 uniprocessor and parallel execution on multiprocessor on UNIX operating
 system.
 
 \section{Elementary Execution Properties}
-\uCPP was developed with three execution properties in mind: thread,
+\uCPPS was developed with three execution properties in mind: thread,
 execution state and mutual exclusion. First of all, the manual stated that
 thread is an execution of code that occurs independently and potentially
 concurrently with other executions in the same program, however, the actions
@@ -119,13 +119,13 @@ present, a programmer may be forced to
 contrive a solution for some problems that violates abstraction or is
 inefficient.
 
-\section{\uCPP Translator}
-\uCPP has a translator that compiles $\mu$\CC code to normal \CC code.
-\section{\uCPP Runtime Structure}
+\section{\uCPPS Translator}
+\uCPP has a translator that compiles \uCCS code to normal \CCS code.
+\section{\uCPPS Runtime Structure}
 \textbf{\textcolor{red}{TODO}}: talk about clusters, processors, tasks and how
-the thread mapping works in \uCPP
+the thread mapping works in \uCPPS
 
-Beside the five new objects introduced by elementary properties, \uCPP also
+Beside the five new objects introduced by elementary properties, \uCPPS also
 introduces two more runtime entities for controlling concurrent execution.
 
 \subsection{Virtual Processor}
