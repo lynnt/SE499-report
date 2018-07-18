@@ -26,9 +26,16 @@ project is to extend GDB to allow perform context switch
 between tasks and examine information about structures that only exist in \uCPPS
 such as clusters, processors, etc.
 
-In addition to extending GDB for \uCPPS, another objective of this research project
-is to add GDB support for \CFA, which is a new language developing by the
-University of Waterloo Programming Language group. In particular, the project
-adds a new demangler for \CFAS because even though \CFAS is compiled
-down to C, it allows overloading for both variables and functions, which is
-non-existent in C.
+In compiler construction, the linker combines one or more object files generated
+by compilers into a single executable file. However, if a programming
+language allows overloading, defining different routines or variables with the
+same identifier, each of these entities must be unique before linkers
+combine all the object files, because otherwise, there is a collision in name.
+The technique used by compilers to resolve collision is callled name mangling.
+This technique provides a mechanism to encode additional information in the
+name of a function, class or variable to supply more semantic information from
+compilers to linkers \cite{reference9}. \CFAS, a new language developed by the University of
+Waterloo Programming Language Group, has overloading feature, so names resolved from
+linkers are mangled name. It is inconvenient to debug using mangled name in
+GDB. Another objective of this research is to add GDB support for \CFA by
+adding a demangler in GDB for \CFAS.

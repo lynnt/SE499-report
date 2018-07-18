@@ -1,6 +1,25 @@
 \chapter{\CFAS Demangler} \label{demangler}
 
 \section{Design Constraints}
+Since \CFAS is a translator for additional features that C does not support, all
+the code during the compilation phase is eventually compiled down to C code.
+The resulting executable file marks the tag DW\_AT\_language with a
+fixed hexadecimal value of the language that the compiler determines at compile
+time. Furthermore, it is possible to have one frame is in C code, and another
+frame in Assembly code, so GDB encodes a language flag for each frame. This
+results into a constraint in implementing the demangler. The first requirement is
+making GDB understands \CFAS as a source language.
+
+Next, because GDB relies on debug information written in DWARF format, DWARF
+reader is a component in GDB, which parses the DWARF format from the object or
+executable file to retrieve and set
+appropriate information in the DIE structure within GDB as mentioned in chapter
+\ref{GDB}. However, the encoded value is a hexadecimal value, and GDB needs to
+know how to map that value into the equivalent format that GDB understands.
+Another requirement is updating the DWARF reader in GDB to recognize \CFA.
+
+Additionally, before the process demangling starts,
+
 \section{Design Implementation}
 \CFAS As A New Source Language in GDB
 

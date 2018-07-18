@@ -15,21 +15,23 @@ requirements you outlined in problem definition section.
 
 \section{Design Constraints}
 As mentioned in chapter \ref{GDB}, there are many ways to extend GDB. However,
-it is best if the selected mechanism is simple, easy to implement and yet
-versatile.
+there are a few design constraints on the selected mechanism. Extension
+mechanism for \uCPPS should be simple, easy to implement and versatile.
 
-Using Python extensions is a good solution for extending GDB given the criteria.
-GDB provides a more extensive API for Python to work with. Additionally, Python
+Python extensions satifies all the given criteria. In particular, GDB provides a more extensive API for Python to work with. Additionally, Python
 is a scripting language with built-in data structures and functions, which make
-it more versatile and easy to work with.
+it easy to work with.
 
 As mentioned in chapter \ref{uCPP}, there are concepts such as clusters and
-virtual processors in \uCPP. It is useful to have built-in GDB commands to list
+virtual processors in \uCPP. It is useful to have GDB commands to list
 all the existing clusters and virtual processors. This provides developers
 a mechanism to understand what is going on in the system. Furthermore, when users
 press Ctrl-C or a failure occurs when running a \uCPPS program, one does not
-know which task the program is in, and which cluster that task falls into. It is
-useful to be able see this information.
+know which task the program is in, and which cluster that task falls into. Thus,
+having a way to look at this information and proceed from there is tremedously
+useful. This results into requirement for four commands. One is for listing out
+all the available clusters, one for tasks, one for processors and finally one
+for listing out all tasks available within a particular cluster.
 
 \section{Design Implementation}
 Seven user-defined commands are implemented as an extension in GDB for \uCPP.

@@ -19,10 +19,9 @@ extension provides a backward compatible version of C while fixing existing
 problems known in C.
 
 \section{Overloading}
-Overloading is when a compiler that allows defining two different routines with
-the same name, but there is a
-In most programming languages, they only allow operator and/or function overloading.
-In addition to those, \uCPP also supports variables and literal 0/1 overloading.
+Overloading is when a compiler allows defining two different routines with
+the same name. In most programming languages, they only allow operator and/or function overloading.
+In addition to those, \CFAS also supports variables and literal 0/1 overloading.
 
 \subsection{Variables}
 Variables in the same block are allowed to have the same name as long as it is
@@ -42,9 +41,9 @@ int MAX = 4;
 double MAX = 1.0;
 
 // select variable MAX based on its left-hand type
-short int s = MAX; // MAX = 3
-int max = MAX; // MAX = 4
-double max = MAX; // MAX = 1.0
+short int s = MAX;      // MAX = 3
+int max = MAX;          // MAX = 4
+double max = MAX;       // MAX = 1.0
 \end{lstlisting}
 \end{frame}
 
@@ -73,10 +72,10 @@ char s = f('a');            // pick (3)
 \end{frame}
 
 \subsection{Operator}
-An operator name is denoted with \? for the operand and any standard C
+An operator name is denoted with \textit{?} for the operand and any standard C
 operator. Operator names within the same block can be overloaded depending on
-the number and type of parameters and returns. However, operators \textit{??},
-\textit{||}, \textit{?:} cannot be overloaded because short-circuit semantics
+the number and type of parameters and returns. However, operators \&\&,
+$\vert\vert$, \textit{?:} cannot be overloaded because short-circuit semantics
 cannot be preserved. This behaves as same as how \CCS behaves.
 \begin{frame}
 \frametitle{}
