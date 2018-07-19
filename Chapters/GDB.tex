@@ -3,7 +3,7 @@
 \section{Introduction}
 GBD is the GNU project debugger, which allows users to see what is going on
 inside another program while it executes, or understand what a program was
-doing at the moment it crashed.
+doing at the moment it crashed \cite{reference3}.
 
 GDB can do four main things to help catching bugs:
 \begin{itemize}
@@ -31,6 +31,11 @@ each variable, type, procedure, etc. A DIE consists of a pair of tag
 and its attribute \cite{reference8}.
 
 \section{Stack Frames}
+Stack frame, or frames for short, is a collection of all data associated with
+one function call. A frame consists of local variables declared in that
+function, arguments passed to the functions, and the address at which the
+function is executing. Frame pointer register stores the address of a frame
+while an execution of this frame is going on. A call stack can have many frames.
 
 \section{Extensions}
 GDB provides three mechanisms for extending the project. The first is
@@ -38,7 +43,7 @@ composition of GDB commands, the second solution is using Python scripting
 language, and the third one is for defining new aliases of existing commands.
 
 \section{Symbol Handling}
-Symbols are a key part of GDB's operation. Symbols are variables, functions and
+Symbols are a key part of GDB's operation. Symbols can be variables, functions and
 types. GDB has three types of symbol tables.
 \begin{itemize}
     \item \textcolor{ForestGreen}{full symbol tables (symtabs)}: These contain the main information

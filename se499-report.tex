@@ -22,6 +22,7 @@
             {\href{tmltran@uwaterloo.ca}{Thi My Linh Tran}}
             {Thi My Linh Tran}
             }
+\emails{tmltran@uwaterloo.ca}
 \addresses  {\groupname\\\deptname\\\univname}  % Do not change this here, instead these must be set in the "Thesis.cls" file, please look through it instead
 \date       {\today}
 \subject    {}
@@ -95,8 +96,15 @@ If the quote is taken from someone, their name goes here
 \preface{
 \addtocontents{toc}{\vspace{1em}}  % Add a gap in the Contents, for aesthetics
 
-The preface is written here (and usually kept to just this page). The page is kept centered vertically so can expand into the blank space above the title too\ldots
+The goal of this work is to add GNU debugging support for \uCPPS and \CFA. To
+achieve this goal for \uCPP, new extensions are written to provide additional
+support for objects that are unknown to GNU debugger. In addition to the work done for
+\uCPP, an addition of a demangler for \CFAS is added to GNU debugger to improve user
+experience.
 
+This report assumes readers have some basic knowledge in compiler construction.
+Background knowledge about how GNU debugger works and features of \uCPP and \CFA
+are provided throughout the report.
 }
 
 \clearpage  % Abstract ended, start a new page

@@ -140,7 +140,15 @@
 \pdfstringdefDisableCommands{
    \let\\\space
 }
+\lstset{language=C++,
+        basicstyle=\ttfamily,
+        keywordstyle=\color{blue}\ttfamily,
+        stringstyle=\color{red}\ttfamily,
+        commentstyle=\color{ForestGreen}\ttfamily,
+        morecomment=[l][\color{magneta}]{\#}
+}
 \newcommand*{\supervisor}[1]{\def\supname{#1}}
+\newcommand*{\emails}[1]{\def\supname{#1}}
 \newcommand*{\examiner}[1]{\def\examname{#1}}
 \newcommand*{\degree}[1]{\def\degreename{#1}}
 \newcommand*{\authors}[1]{\def\authornames{#1}}
@@ -156,6 +164,7 @@
 \newcommand*{\subject}[1]{\def\subjectname{#1}}
 \newcommand*{\keywords}[1]{\def\keywordnames{#1}}
 \supervisor  {}
+\emails  {tmltran@uwaterloo.ca}
 \examiner    {}
 \degree      {}
 \authors     {}
@@ -209,6 +218,7 @@
       {\LARGE by \par}
       \smallskip
       {\LARGE \authornames \par}
+      {\LARGE \emails \par}
       \vfill
       \bigskip
       \bigskip
@@ -245,17 +255,17 @@
   \null\vfil
   \begin{center}
     \setlength{\parskip}{0pt}
-    {\normalsize \UNIVNAME \par}
-    \bigskip
+    %{\normalsize \UNIVNAME \par}
+    %\bigskip
     {\huge{\textit{Preface}} \par}
-    \bigskip
-    {\normalsize \facname \par}
-    {\normalsize \deptname \par}
-    \bigskip
-    {\normalsize\bf \@title \par}
-    \medskip
-    {\normalsize by \authornames \par}
-    \bigskip
+    %\bigskip
+    %{\normalsize \facname \par}
+    %{\normalsize \deptname \par}
+    %\bigskip
+    %{\normalsize\bf \@title \par}
+    %\medskip
+    %{\normalsize by \authornames \par}
+    %\bigskip
   \end{center}
 }
 {

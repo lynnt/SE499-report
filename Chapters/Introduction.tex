@@ -2,7 +2,7 @@
 
 Computer programming languages allow humans to instruct computers to perform an
 action in a language they understand. All these languages eventually translate
-to binary, in which is a representation of number 0 and 1. New languages are
+to binary, which is a representation of number 0 and 1. New languages are
 invented to perform a particular task better, or to be a replacement with
 additional features and performance that existing language cannot do as well or
 to improve developers' productivity.
@@ -34,8 +34,8 @@ combine all the object files, because otherwise, there is a collision in name.
 The technique used by compilers to resolve collision is callled name mangling.
 This technique provides a mechanism to encode additional information in the
 name of a function, class or variable to supply more semantic information from
-compilers to linkers \cite{reference9}. \CFAS, a new language developed by the University of
+compilers to linkers \cite{reference9}. \CFA, a new language developed by the University of
 Waterloo Programming Language Group, has overloading feature, so names resolved from
 linkers are mangled name. It is inconvenient to debug using mangled name in
-GDB. Another objective of this research is to add GDB support for \CFA by
-adding a demangler in GDB for \CFAS.
+GDB. Therefore, another objective of this research is to add GDB support for \CFAS by
+adding a demangler in GDB for \CFA.

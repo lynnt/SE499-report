@@ -29,12 +29,6 @@ differentiated by type. An assignment of a new variable to the same variable is
 deferred from type.
 \begin{frame}
 \frametitle{}
-\lstset{language=C++,
-        basicstyle=\ttfamily,
-        keywordstyle=\color{blue}\ttfamily,
-        stringstyle=\color{red}\ttfamily,
-        commentstyle=\color{ForestGreen}\ttfamily,
-        morecomment=[l][\color{magneta}]{\#}}
 \begin{lstlisting}
 short int MAX = 3;
 int MAX = 4;
@@ -52,12 +46,6 @@ Routines in the same block can be overloaded depending on the number and type of
 parameters and returns.
 \begin{frame}
 \frametitle{}
-\lstset{language=C++,
-        basicstyle=\ttfamily,
-        keywordstyle=\color{blue}\ttfamily,
-        stringstyle=\color{red}\ttfamily,
-        commentstyle=\color{ForestGreen}\ttfamily,
-        morecomment=[l][\color{magneta}]{\#}}
 \begin{lstlisting}
 void f(<@\textcolor{red}{void}@>);              // (1)
 void f(<@\textcolor{red}{char}@>);              // (2)
@@ -79,12 +67,6 @@ $\vert\vert$, \textit{?:} cannot be overloaded because short-circuit semantics
 cannot be preserved. This behaves as same as how \CCS behaves.
 \begin{frame}
 \frametitle{}
-\lstset{language=C++,
-        basicstyle=\ttfamily,
-        keywordstyle=\color{blue}\ttfamily,
-        stringstyle=\color{red}\ttfamily,
-        commentstyle=\color{ForestGreen}\ttfamily,
-        morecomment=[l][\color{magneta}]{\#}}
 \begin{lstlisting}
 int <@\textcolor{red}{++?}@>(int op);           // unary prefix increment
 int <@\textcolor{red}{?++}@>(int op);           // unary postfix increment
