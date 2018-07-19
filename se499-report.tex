@@ -103,7 +103,8 @@ support for objects that are unknown to GNU debugger. In addition to the work do
 experience.
 
 This report assumes readers have some basic knowledge in compiler construction.
-Background knowledge about how GNU debugger works and features of \uCPP and \CFA
+Background knowledge about how GNU debugger works and features of \uCPPS and
+\CFAS
 are provided throughout the report.
 }
 
@@ -152,6 +153,7 @@ Delisle for their guidance throughout the development of this project.
 
 %% ----------------------------------------------------------------
 \clearpage  % Start a new page
+\iffalse
 %\lhead{\emph{Physical Constants}}  % Set the left side page header to "Physical Constants"
 %\listofconstants{lrcl}  % Include a list of Physical Constants (a four column table)
 {
@@ -161,7 +163,6 @@ Delisle for their guidance throughout the development of this project.
 }
 
 %% ----------------------------------------------------------------
-\iffalse
 \clearpage  %Start a new page
 \lhead{\emph{Symbols}}  % Set the left side page header to "Symbols"
 \listofnomenclature{lll}  % Include a list of Symbols (a three column table)
@@ -189,19 +190,31 @@ Delisle for their guidance throughout the development of this project.
 % Include the chapters of the thesis, as separate files
 % Just uncomment the lines as you write the chapters
 
+\lhead{\emph{Introduction}}  % Set the left side page header to "Abbreviations"
 \input{Chapters/Introduction} % Introduction
 
 $% Background
-
+\clearpage  %Start a new page
+\lhead{\emph{\uCPP}}  % Set the left side page header to "Abbreviations"
 \input{Chapters/uCPP}
+\clearpage  %Start a new page
+\lhead{\emph{GNU Debugger}}  % Set the left side page header to "Abbreviations"
 \input{Chapters/GDB}
+\clearpage  %Start a new page
+\lhead{\emph{\CFA}}  % Set the left side page header to "Abbreviations"
 \input{Chapters/CFA}
+\clearpage  %Start a new page
 
 % Real work done
 
+\lhead{\emph{GNU Debugger Extensions for \uCPP}}  % Set the left side page header to "Abbreviations"
 \input{Chapters/Extensions}
+\clearpage  %Start a new page
+\lhead{\emph{\CFAS Demangler}}  % Set the left side page header to "Abbreviations"
 \input{Chapters/Demangler}
+\clearpage  %Start a new page
 
+\lhead{\emph{Conclusion}}  % Set the left side page header to "Abbreviations"
 \input{Chapters/Conclusion} % Conclusion
 
 %% ----------------------------------------------------------------
