@@ -143,7 +143,10 @@
 }
 \lstset{language=C++,
         basicstyle=\ttfamily,
-        keywordstyle=\color{blue}\ttfamily,
+        numbers=left,
+        stepnumber=1,
+        firstnumber=1,
+        %keywordstyle=\color{blue}\ttfamily,
         stringstyle=\color{red}\ttfamily,
         commentstyle=\color{ForestGreen}\ttfamily,
         morecomment=[l][\color{magneta}]{\#}
