@@ -55,3 +55,8 @@ This option can be turned on for \CFAS in GDB by adding a new enum value for \CF
 the list of demangling styles along with setting the appropriate mask for this
 style in \verb|include/demangle.h|. After doing this step, users can now choose
 if they want to use \CFAS demangler in GDB by calling \verb|set demangle-style <language>|.
+
+\section{Result}
+The addition of hooks throughout GDB enables the invocation of the new \CFAS demangler, however, as the
+language develops, symbol lookup for non-local variables must be implemented to
+produce the correct output.

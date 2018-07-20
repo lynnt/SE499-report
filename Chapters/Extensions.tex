@@ -1,73 +1,83 @@
 \chapter{Extending GDB for \uCPP}
 \section{Design Constraints}
-As mentioned in chapter \ref{GDB}, there are many ways to extend GDB. However,
+As mentioned in Chapter \ref{GDB}, there are many ways to extend GDB. However,
 there are a few design constraints on the selected mechanism. Extension
 mechanism for \uCPPS should be simple, easy to implement and versatile.
 
-\textcolor{red}{TODO:} rewrite this to talk about flexibility in commands
-
 Regardless of which mechanism selected for extending GDB, all the functions
 implemented should maintain the same functionality. In addition to functional
-requirements, user usability is a required non-functional requirement for this
-project. The justification for this requirement is reduction time in
-learning and using the extensions.
+requirements, user usability and flexibility are additional required
+non-functional requirements for this
+project. These final requirements enable developers to be productive quickly
+and can do more with the extensions.
 
 \section{Design Implementation}
-First of all, after doing resarching about different approaches and the requirements for new
-commands, Python API satifies all the given criteria above. In particular, GDB provides a more extensive API for Python to work with. Additionally, Python
-is a scripting language with built-in data structures and functions, which make
-it easy to work with.
+Firstly, Python API satifies all the given criteria above after researching
+about different solutions. In particular, GDB provides an extensive API for
+Python compared to other solutions. Furthermore, Python is a scripting language with built-in
+data structures and functions that enables the development of more complex
+operations and yet saves time on development of the project.
 
 The next task for extending GDB is writing new user-defined commands that allow
 users to switch from one task to another task. This means that there needs to be at
-least two commands. The first command is for switching to the new task and let
-call it \verb|push_task|, and another command
+least two commands. The first command is for switching from the current task to
+the new task that can be called \verb|push_task|, and another command
 is for switching back to the previous task, from which the current task comes
-from, and let name this command \verb|pop_task|.
+from, and this command is named \verb|pop_task|.
 
-Prior to implement \verb|pushtask| or \verb|poptask| command, many questions come up about how
+Prior to implementing either \verb|pushtask| or \verb|poptask| command, many questions come up about how
 these command should work.
 \begin{itemize}
-\item What format of the argument of the new task should it be for command
-\verb|pushtask|?
+\item What format of the argument of the new task should it the command
+\verb|pushtask| be?
 \item Should \verb|pushtask| command allow users to pass the address of the desired task or can users
-pass in the identification of the cluster the task is in along with the unique
-identification of the task with respect to the cluster?
-\item Should \verb|pushtask| command save context of the current task before it switches to
-another task for every switch or should the command save only the context of the
+pass in an index of the cluster, in which the task is, along with the index of
+the task with respect to that cluster?
+\item Should \verb|pushtask| command save the context of the current task before it switches to
+another task every time? Or should the command only save the context of the
 originating task?
 \end{itemize}
 
 As a result, there are two variations of \verb|pushtask| command to provide both
-user usability and flexibility. The first option is called \verb|pushtask| and requires
+user usability and flexibility. The first variation is called \verb|pushtask| and requires
 only one argument, which is the address of the task a user wants to switch to.
 The second variation is called \verb|pushtask_id| and requires both the index of
-the cluster and the index of the task they would like
+the cluster and the index of the task a user would like
 to switch to as arguments. Core functionality of these two commands is
 essentially the same. The only difference is that the \verb|pushtask_id| command
 needs to iterate through the data structure that stores all the clusters to find
-the right cluster baed on its index, and from the instance of the cluster, the
-command looks for the instance of the respective task. From there, the second
-command invokes the function that both share in common. Furthermore, a decision
-is made to store context information for every context switching, this means
+the right cluster based on its index, and using the found instance of the
+cluster to search for the instance of the expected task. Additionally, the second
+command invokes a function that performs the context switch between tasks, which
+is shared by these two commands. Furthermore, a decision
+is made to store the context information for every context switching, this means
 that \verb|pushtask| command needs to perform actions to store these information every time it is
-invoked. Each task has a copy of \verb|uContext_t|, which stores context
+invoked. Each task has a copy of \verb|uContext_t|, which stores the context
 information such as stack pointer, frame pointer. These pointers are then stored
 in convenience variables for every level of redirection. Similarly, the command
-retrieves these context information from the task a user wants to switch to, and
-set the equivalent registers to these values. In particular, value of stack
-pointer is set in \verb|rsp| register, value of frame pointer is set in \verb|rbp|
-register, and finally value of program counter is set in \verb|pc| register.
+also retrieves these context information but from the task that a user wants to switch to, and
+sets the equivalent registers to the new values. In particular, the value of the stack
+pointer is set in \verb|rsp| register, the value of the frame pointer is set in \verb|rbp|
+register, and finally the value of the program counter is set in \verb|pc| register.
 Normally, register values are relative to the current stack frame assuming that
-all the stack frames farther exited and their registers are restored, therefore, in
-order to see the true value of hardware registers, innermost frame must be
-selected, which is frame 0\cite{reference11}. However, it is possible to not to be in frame 0, so prior to setting these values,
-the command switches back to the innermost (currently executing) frame first.
+all the stack frames farther already exited and their registers are restored. Therefore, in
+order to see the true value of hardware registers, innermost frame that is
+frame-0 must be selected\cite{reference11}. However, it is possible to not to be in frame-0, so prior to setting these values,
+the command must switch back to the innermost (currently executing) frame first.
 
-Finally, the implementation of \verb|poptask| is more straightforward. This
-command goes back to the previous task, however, this may not be the original
+Finally, the implementation of \verb|poptask| is more straightforward and does
+not require different variations of the command. This command goes back to the previous task, however, this may not be the original
 task that initiates the task switching process. If the current context is
-already in the starting task, the command does nothing. Otherwise, \verb|poptask| command first switches back to the innermost frame, and then retrieve the
-address of the last task it was switched from, and set the same registers as
+already in the starting task, the command does nothing. Otherwise,
+\verb|poptask| command first switches back to the innermost frame, and then
+retrieves the
+address of the last task it was switched from, and sets the same set of registers as
 \verb|pushtask| command did but to the values of the last task's context
 information.
+
+\section{Result}
+The current implementation successfully allows users to switch from one task to
+another task, but does not permit the switch if the destination task is an already terminated
+task. However, if a user would like to continue the execution where it is left
+off assuming that the program has yet crashed, then the user needs to perform
+\verb|poptask| all the way back to the originating task before moving forward.
