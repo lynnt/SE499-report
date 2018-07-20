@@ -1,31 +1,29 @@
 \chapter{\CFA} \label{CFA}
 \section{Introduction}
-\textbf{\textcolor{red}{TODO}}: rephrase all these stuff in my own word and cite
+Similar to \CC, C is a popular programming language especially in system
+programming. For example, Windows NT kernel and Linux kernel are written in C, and they are the foundation of many higher level
+and popular projects. Therefore, it is unlikely that programming language C is
+going to disappear any time soon.
 
-Similar to \CC, C is a popular programming language especially in systems such
-as operating systems, embedded systems. For example, Windows NT kernel and
-Linux kernel are written in C, and they are the foundation of many higher level
-and popular projects. Therefore, it is unlikely that they will go away any time soon.
+However, C has inherent problems in syntactics, linkage, semantics and many
+more. Even though \CCS is meant to fix these problems, \CCS has many
+irreversible legacy design choices, and newer versions of \CCS require significantly more effort to convert C-based projects into \CCS.
 
-However, C has in syntactics, linkage, semantics and many
-more. Even though \CCS is meant to fix these problems, \CCS has legacy design
-choices that cannot be undone and newer versions of \CCS require significantly
-more effort to convert C-based projects into \CCS.
-
-To solve this problem, \CFAS is designed by the programming language group at the
-University of Waterloo. The language's goal is to extend C with modern language
-features that many new languages have been known for such as Rust, Go. This
-extension provides a backward compatible version of C while fixing existing
-problems known in C.
+To solve this problem, \CFAS is designed at the University of Waterloo. The goal
+of the language is to extend C with modern language features that many new
+languages have been known for such as Rust, Go. This extension provides a
+backward-compatible version of C while fixing existing problems known in C and
+modernizing the language at the same time.
 
 \section{Overloading}
-Overloading is when a compiler allows defining two different routines with
-the same name. In most programming languages, they only allow operator and/or function overloading.
-In addition to those, \CFAS also supports variables and literal 0/1 overloading.
+Overloading is when a compiler permits defining two different routines with
+the same name. Most programming languages only allow operator and/or function overloading.
+In addition to those functionalities, \CFAS also supports variables and literal
+\verb|0/1| overloading.
 
-\subsection{Variables}
+\subsection{Variable}
 Variables in the same block are allowed to have the same name as long as it is
-differentiated by type. An assignment of a new variable to the same variable is
+differentiated by its type. An assignment of a new variable to the same variable is
 deferred from type.
 \begin{frame}
 \frametitle{}
@@ -60,10 +58,10 @@ char s = f('a');            // pick (3)
 \end{frame}
 
 \subsection{Operator}
-An operator name is denoted with \textit{?} for the operand and any standard C
+An operator name is denoted with \verb|?| for the operand, and any standard C
 operator. Operator names within the same block can be overloaded depending on
-the number and type of parameters and returns. However, operators \&\&,
-$\vert\vert$, \textit{?:} cannot be overloaded because short-circuit semantics
+the number and type of parameters and returns. However, operators \verb|&&|,
+\verb-||-, \verb|?:| cannot be overloaded because short-circuit semantics
 cannot be preserved. This behaves as same as how \CCS behaves.
 \begin{frame}
 \frametitle{}

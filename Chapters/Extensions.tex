@@ -61,7 +61,7 @@ register, and finally value of program counter is set in \verb|pc| register.
 Normally, register values are relative to the current stack frame assuming that
 all the stack frames farther exited and their registers are restored, therefore, in
 order to see the true value of hardware registers, innermost frame must be
-selected, which is frame 0\cite{reference}. However, it is possible to not to be in frame 0, so prior to setting these values,
+selected, which is frame 0\cite{reference11}. However, it is possible to not to be in frame 0, so prior to setting these values,
 the command switches back to the innermost (currently executing) frame first.
 
 Finally, the implementation of \verb|poptask| is more straightforward. This
