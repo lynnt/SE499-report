@@ -10,79 +10,34 @@ on uniprocessor and parallel execution on multiprocessor.
 \begin{itemize}
 \item \textcolor{ForestGreen}{Thread}: is an execution of code that occurs
 indepedently and possibly in concurrent with other execution. However, the
-result of the execution is still sequential.
-\item \textcolor{ForestGreen}{Execution State}:
-\item \textcolor{ForestGreen}{Mutual Exclusion}:
+result of the execution is still sequential. The functionality of a thread is to
+advance execution by changing its execution state. There are three basic states
+of a thread. A thread is blocked when it is waiting for an occurrence of some
+events. A thread is running if it is executing instructions on an actual
+processor. A ready thread is when it is available for execution but is not
+executing due to not being selected.
+\item \textcolor{ForestGreen}{Execution State}: is the state information required
+    to allow independent execution. Local data, local block, routine activations
+    and current execution location, which is initialized to the starting point are considered to be part of an execution
+    state. In particular, the local block and routine executions are maintained in a
+    stack, and is the area where the local variables and execution is preserved
+    when an execution state is inactive. Execution state is determined by a progarmming language, and is an elementary property of the semantics of a
+language. Context switch is when control transfers from one execution state to
+another.
+\item \textcolor{ForestGreen}{Mutual Exclusion}: is an mechanism that allows an
+    action to be performed on a resource without being interrupted by by other
+    actions on the same resource. In a concurrent environment, mutual exclusion
+    is required to maintain consistency of results. This mechanism cannot be
+    trivially or efficiently implemented without appropriate programming
+    language constructs.
 \end{itemize}
-concurrently with other executions in the same program, however, the actions
-taken in the thread are still performed sequentially. Secondly, execution state
-provides information about states, which allows independent execution. These
-information can be local data, local block and routine activations. Finally,
-mutual exclusion is a mechanism, in which enables an execution performed without
-interruption by another action on a shared resource. In a concurrent system, mutual exclusion is required to guarantee consistent
-generation
-of results, and cannot be trivially or efficiently implemented without
-appropriate programming language
-constructs.
-The first two properties represent the minimum needed to perform execution, and
-seem to be fundamental in that
-they are not expressible in machine-independent or language-independent ways.
-For example, creating a new thread
-requires creation of system runtime control information, and manipulation of
-execution states requires machine specific
-operations (modifying stack and frame pointers). The last property, while
-expressible in terms of simple language
-statements, can only be done by algorithms that are error-prone and inefficient,
-e.g., Dekker-like algorithms, and
-therefore, mutual exclusion must also be provided as an elementary execution
-property, usually through special atomic
-hardware instructions.
-
-Extensions to the object concept were developed based on the following execution
-properties:
-thread – is execution of code that occurs independently of and possibly
-concurrently with other execution; the exe- cution resulting from a thread is
-sequential. A thread’s function is to advance execution by changing execution
-state. Multiple threads provide concurrent execution. A programming language
-must provide constructs that permit the creation of new threads and specify how
-threads are used to accomplish computation. Furthermore, there must be
-programming language constructs whose execution causes threads to block and
-subsequently be made ready for execution. A thread is either blocked or running
-or ready. A thread is blocked when it is waiting for some event to occur. A
-thread is running when it is executing on an actual processor. A thread is ready
-when it is eligible for execution but not being executed.
-execution state – is the state information needed to permit independent
-execution. An execution state is either active or inactive, depending on whether
-or not it is currently being used by a thread. In practice, an execution state
-consists of the data items created by an object, including its local data, local
-block and routine activations, and a current execution location, which is
-initialized to a starting point. The local block and routine activations are
-often maintained in a contiguous stack, which constitutes the bulk of an
-execution state and is dynamic in size, and is the area where the local
-variables and execution location are preserved when an execution state is
-inactive. A programming language determines what constitutes an execution state,
-and therefore, execution state is an elementary property of the semantics of a
-language. When control transfers from one execution state to another, it is
-called a context switch.
-mutual exclusion – is the mechanism that permits an action to be performed on a
-resource without interruption by other actions on the resource. In a concurrent
-system, mutual exclusion is required to guarantee consistent gen- eration of
-results, and cannot be trivially or efficiently implemented without appropriate
-programming language constructs.
 
 \section{High-level Execution Constructs}
-\textbf{\textcolor{red}{TODO}}: rephrase all these stuff in my own word and cite
-A programming language designer could attempt to provide these 3 execution
-properties as basic abstractions in a
-programming language [BLL88], allowing users to construct higher-level
-constructs from them. However, some combinations
-might be inappropriate or potentially dangerous. Therefore, all combinations are
-examined, analyzing which
-ones make sense and are appropriate as higher-level programming language
-constructs. What is interesting is that
-enumerating all combination of these elementary execution properties produces
-many existing high-level abstractions
-and suggests new ones.
+The three execution properties are properties of an object. However, not all
+combination of these properties are appropriate, and different combination
+results into a different kind of objects. The result of possible combinations is
+summarized in Table\ref{table-execution-constructs}
+
 The three execution properties are properties of objects. Therefore, an object
 may or may not have a thread, may
 or may not have an execution state, and may or may not have mutual exclusion.
