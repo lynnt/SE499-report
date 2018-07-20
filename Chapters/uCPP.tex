@@ -1,10 +1,12 @@
 \chapter{\uCPP} \label{uCPP}
 
+\section{Introduction}
 According to the \uCPPS annotated reference manual \cite{reference10}, \uCPPS
 extends \CCS programming language. This language introduces new mechanism to
 facilitate control flow, and adds new objects to enable lightweight concurrency
 on uniprocessor and parallel execution on multiprocessor.
 
+\iffalse
 \section{Elementary Execution Properties}
 \uCPPS was developed with three execution properties in mind:
 \begin{itemize}
@@ -33,154 +35,49 @@ another.
 \end{itemize}
 
 \section{High-level Execution Constructs}
-The three execution properties are properties of an object. However, not all
+There are three elementary execution properties in \uCPP: thread, execution
+state and mutual exclusion. These there properties are properties of an object. However, not all
 combination of these properties are appropriate, and different combination
-results into a different kind of objects. The result of possible combinations is
-summarized in Table\ref{table-execution-constructs}
+results into a different kind of objects.
+\fi
 
-The three execution properties are properties of objects. Therefore, an object
-may or may not have a thread, may
-or may not have an execution state, and may or may not have mutual exclusion.
-Different combinations of these three
-properties produce different kinds of objects. If an object has mutual
-exclusion, this means that execution of certain
-member routines are mutually exclusive of one another. Such a member routine is
-called a mutual-exclusion member
-(mutex member). In the situation where an object does not have the minimum
-properties required for execution, i.e.,
-thread and execution state, those of its caller are used.
+\section{Tasks}
+\textcolor{ForestGreen}{Task} behaves like a class object, but it maintains its own
+thread and execution state, which is the state information required to allow
+independent executions. A task provides mutual exclusion by default for its
+public member methods. Tasks are used for communication between tasks and
+concurency improvement since a task can context switch, which is a control transfer from
+one execution state to another one, to another task waiting to be selected to
+run on a processor if the current task needs to wait for an occurrence of an
+event.
 
-Case 1 is an object, such as a free routine (a routine not a member of an
-object) or an object with member routines
-neither of which has the necessary execution properties, called a class object.
-In this case, the caller’s thread and
-execution state are used to perform execution. Since this kind of object
-provides no mutual exclusion, it is normally
-accessed only by a single thread. If such an object is accessed by several
-threads, explicit locking may be required,
-which violates a design requirement. Case 2 is like Case 1 but deals with the
-concurrent-access problem by implicitly
-ensuring mutual exclusion for the duration of each computation by a member
-routine. This abstraction is a monitor
-[Hoa74]. Case 3 is an object that has its own execution state but no thread.
-Such an object uses its caller’s thread
-to advance its own execution state and usually, but not always, returns the
-thread back to the caller. This abstraction
-is a coroutine [Mar80]. Case 4 is like Case 3 but deals with the
-concurrent-access problem by implicitly ensuring
-mutual exclusion; the name coroutine monitor has been adopted for this case.
-Cases 5 and 6 are objects with a thread
-but no execution state. Both cases are rejected because the thread cannot be
-used to provide additional concurrency.
-First, the object’s thread cannot execute on its own since it does not have an
-execution state, so it cannot perform any
-independent actions. Second, if the caller’s execution state is used, assuming
-the caller’s thread can be blocked to
-ensure mutual exclusion of the execution state, the effect is to have two
-threads successively executing portions of a
-single computation, which does not seem useful. Case 7 is an object that has its
-own thread and execution state. Because
-it has both a thread and execution state it is capable of executing on its own;
-however, it lacks mutual exclusion.
-Without mutual exclusion, access to the object’s data is unsafe; therefore,
-servicing of requests would, in general,
-require explicit locking, which violates a design requirement. Furthermore,
-there is no performance advantage over
-case 8. For these reasons, this case is rejected. Case 8 is like Case 7 but
-deals with the concurrent-access problem by
-implicitly ensuring mutual exclusion, called a task.
-The abstractions suggested by this categorization come from fundamental
-properties of execution and not ad hoc
-6 CHAPTER 1. µC++ EXTENSIONS
-decisions of a programming language designer. While it is possible to simplify
-the programming language design by
-only supporting the task abstraction [SBG+90], which provides all the elementary
-execution properties, this would
-unnecessarily complicate and make inefficient solutions to certain problems. As
-will be shown, each of the nonrejected
-abstractions produced by this categorization has a particular set of problems it
-can solve, and therefore, each
-has a place in a programming language. If one of these abstractions is not
-present, a programmer may be forced to
-contrive a solution for some problems that violates abstraction or is
-inefficient.
-
-\section{\uCPPS Translator}
-\uCPP has a translator that compiles \uCCS code to normal \CCS code.
 \section{\uCPPS Runtime Structure}
-\textbf{\textcolor{red}{TODO}}: talk about clusters, processors, tasks and how
-the thread mapping works in \uCPPS
+\uCPPS introduces two new runtime entities for controlling concurrent execution:
+\begin{itemize}
+    \item Cluster
+    \item Virtual processor
+\end{itemize}
 
-Beside the five new objects introduced by elementary properties, \uCPPS also
-introduces two more runtime entities for controlling concurrent execution.
+\subsection{Cluster}
+A cluster is a group of tasks and virtual processor (discussed next) that
+execute tasks. The objective of a cluster is to control the amount of possible
+parallelism, which is only feasible if there are many multiprocessors, among tasks.
+
+At the start of a \uCPPS program, two clusters are created. One is system
+cluster and the other cluster is user cluster. The system cluster uses a
+processor that only performs management tasks such as error detection and
+correction from user clusters if an execution in a user cluster results into
+errors, and proper cleaning up when a shutdown occurs. A user cluster manages and executes user tasks on processors. The benefits of clusters
+are maximized utilization of processors and miminization of runtime by
+permitting many tasks to execute in a cluster. Due to the scheduling tasks model
+in a cluster, load balacing tasks are performed to achieve the best result.
+However, automatic load balancing between clusters does not exist, so manual
+mitigration is performed by users.
 
 \subsection{Virtual Processor}
-A µC++ virtual processor is a “software processor” that executes threads. A
-virtual processor is implemented by kernel
-thread (normally created through a UNIX process) that is subsequently scheduled
-for execution on a hardware
-    processor by the underlying operating system. On a multiprocessor, kernel
-    threads are usually distributed across the hardware processors and so some
-    virtual processors are able to execute in parallel. µC++ uses virtual
-    processors instead
-    of hardware processors so that programs do not actually allocate and hold
-    hardware processors. Programs can
-    be written to run using a number of virtual processors and execute on a
-    machine with a smaller number of hardware
-    processors. Thus, the way in which µC++ accesses the parallelism of the
-    underlying hardware is through an intermediate
-    resource, the kernel thread. In this way, µC++ is kept portable across
-    uniprocessor and different multiprocessor
-    hardware designs.
-    When a virtual processor is executing, µC++ controls scheduling of tasks on
-    it. Thus, when UNIX schedules a
-    virtual processor for a runtime period, µC++ may further subdivide that
-    period by executing one or more tasks. When
-    multiple virtual processors are used to execute tasks, the µC++ scheduling
-    may automatically distribute tasks among
-    virtual processors, and thus, indirectly among hardware processors. In this
-    way, parallel execution occurs.
-\subsection{Cluster}
-A cluster is a collection of tasks and virtual processors (discussed next) that
-execute the tasks. The purpose of a cluster
-is to control the amount of parallelism that is possible among tasks, where
-parallelism is defined as execution which
-occurs simultaneously. Parallelism can only occur when multiple processors are
-present. Concurrency is execution
-that, over a period of time, appears to be parallel. For example, a program
-written with multiple tasks has the potential
-to take advantage of parallelism but it can execute on a uniprocessor, where it
-may appear to execute in parallel
-because of the rapid speed of context switching.
-Normally, a cluster uses a single-queue multi-server queueing model for
-scheduling its tasks on its processors (see
-Chapter 10, p. 135 for other kinds of schedulers). This simple scheduling
-results in automatic load balancing of tasks
-on processors. Figure 2.1 illustrates the runtime structure of a µC++ program.
-An executing task is illustrated by its
-containment in a processor. Because of appropriate defaults for clusters, it is
-possible to begin writing µC++ programs
-after learning about coroutines or tasks. More complex concurrency work may
-require the use of clusters. If several
-clusters exist, both tasks and virtual processors, can be explicitly migrated
-from one cluster to another. No automatic
-load balancing among clusters is performed by µC++.
-When a µC++ program begins execution, it creates two clusters: a system cluster
-and a user cluster. The system
-cluster contains a processor that does not execute user tasks. Instead, the
-system cluster handles system-related operations,
-such as catching errors that occur on the user clusters, printing appropriate
-error information, and shutting
-down µC++. A user cluster is created to contain the user tasks; a staring task
-is created in the user cluster, called main
-with type uMain, which calls routine main. Having all tasks execute on the one
-cluster often maximizes utilization of
-processors, which minimizes runtime. However, because of limitations of the
-underlying operating system or because
-of special hardware requirements, it is sometimes necessary to have more than
-one cluster. Partitioning into clusters
-must be used with care as it has the potential to inhibit parallelism when used
-indiscriminately. However, in some situations
-partitioning is essential, e.g., on some systems concurrent UNIX I/O operations
-are only possible by exploiting
-the clustering mechanism.
+A virtual processor is a software emulation of a processor that executes
+threads. Kernel threads are used to implement a virtual processor, which are
+scheduled for execution on a hardware processor by the underlying operating
+system. The operating system distributes kernel threads across a number of
+processors assuming that the program runs on a multiprocessor architecture. The
+usage of kernel threads enables parallel execution in \uCPP.
