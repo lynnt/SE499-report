@@ -1,17 +1,19 @@
 \chapter{\uCPP} \label{uCPP}
 
-\textbf{\textcolor{red}{TODO}}: rephrase all these stuff in my own word and cite
-
 According to the \uCPPS annotated reference manual \cite{reference10}, \uCPPS
-for \CCS programming language. This language introduces new mechanisms to facilitate
-control flow, and an addition of lightweight concurrency objects on
-uniprocessor and parallel execution on multiprocessor on UNIX operating
-system.
+extends \CCS programming language. This language introduces new mechanism to
+facilitate control flow, and adds new objects to enable lightweight concurrency
+on uniprocessor and parallel execution on multiprocessor.
 
 \section{Elementary Execution Properties}
-\uCPPS was developed with three execution properties in mind: thread,
-execution state and mutual exclusion. First of all, the manual stated that
-thread is an execution of code that occurs independently and potentially
+\uCPPS was developed with three execution properties in mind:
+\begin{itemize}
+\item \textcolor{ForestGreen}{Thread}: is an execution of code that occurs
+indepedently and possibly in concurrent with other execution. However, the
+result of the execution is still sequential.
+\item \textcolor{ForestGreen}{Execution State}:
+\item \textcolor{ForestGreen}{Mutual Exclusion}:
+\end{itemize}
 concurrently with other executions in the same program, however, the actions
 taken in the thread are still performed sequentially. Secondly, execution state
 provides information about states, which allows independent execution. These
@@ -35,6 +37,38 @@ e.g., Dekker-like algorithms, and
 therefore, mutual exclusion must also be provided as an elementary execution
 property, usually through special atomic
 hardware instructions.
+
+Extensions to the object concept were developed based on the following execution
+properties:
+thread – is execution of code that occurs independently of and possibly
+concurrently with other execution; the exe- cution resulting from a thread is
+sequential. A thread’s function is to advance execution by changing execution
+state. Multiple threads provide concurrent execution. A programming language
+must provide constructs that permit the creation of new threads and specify how
+threads are used to accomplish computation. Furthermore, there must be
+programming language constructs whose execution causes threads to block and
+subsequently be made ready for execution. A thread is either blocked or running
+or ready. A thread is blocked when it is waiting for some event to occur. A
+thread is running when it is executing on an actual processor. A thread is ready
+when it is eligible for execution but not being executed.
+execution state – is the state information needed to permit independent
+execution. An execution state is either active or inactive, depending on whether
+or not it is currently being used by a thread. In practice, an execution state
+consists of the data items created by an object, including its local data, local
+block and routine activations, and a current execution location, which is
+initialized to a starting point. The local block and routine activations are
+often maintained in a contiguous stack, which constitutes the bulk of an
+execution state and is dynamic in size, and is the area where the local
+variables and execution location are preserved when an execution state is
+inactive. A programming language determines what constitutes an execution state,
+and therefore, execution state is an elementary property of the semantics of a
+language. When control transfers from one execution state to another, it is
+called a context switch.
+mutual exclusion – is the mechanism that permits an action to be performed on a
+resource without interruption by other actions on the resource. In a concurrent
+system, mutual exclusion is required to guarantee consistent gen- eration of
+results, and cannot be trivially or efficiently implemented without appropriate
+programming language constructs.
 
 \section{High-level Execution Constructs}
 \textbf{\textcolor{red}{TODO}}: rephrase all these stuff in my own word and cite

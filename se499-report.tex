@@ -96,16 +96,16 @@ If the quote is taken from someone, their name goes here
 \preface{
 \addtocontents{toc}{\vspace{1em}}  % Add a gap in the Contents, for aesthetics
 
-The goal of this work is to add GNU debugging support for \uCPPS and \CFA. To
+The goal of this work is to add GNU Debugger support for \uCPPS and \CFA. To
 achieve this goal for \uCPP, new extensions are written to provide additional
-support for objects that are unknown to GNU debugger. In addition to the work done for
-\uCPP, an addition of a demangler for \CFAS is added to GNU debugger to improve user
-experience.
+support for high-level constructs that are unknown to GNU Debugger. In addition to the work done for
+\uCPP, many hooks are added in GNU Debugger to enable the addition of \CFAS
+demangler.
 
-This report assumes readers have some basic knowledge in compiler construction.
-Background knowledge about how GNU debugger works and features of \uCPPS and
+This report assumes readers have some basic knowledge of compiler construction.
+Background knowledge about how GNU Debugger works and specific features of \uCPPS and
 \CFAS
-are provided throughout the report.
+are provided in the report.
 }
 
 \clearpage  % Abstract ended, start a new page
@@ -118,7 +118,9 @@ are provided throughout the report.
 \addtocontents{toc}{\vspace{1em}}  % Add a gap in the Contents, for aesthetics
 
 I would like to thank Professor Peter Buhr and Thierry
-Delisle for their guidance throughout the development of this project.
+Delisle for their guidance throughout the development of this project. The
+GNU Debugger's internal wiki page is used as a guide for the development of
+adding a demangler for \CFA.
 
 }
 \clearpage  % End of the Acknowledgements
@@ -132,12 +134,16 @@ Delisle for their guidance throughout the development of this project.
 \tableofcontents  % Write out the Table of Contents
 
 %% ----------------------------------------------------------------
-\lhead{\emph{List of Figures}}  % Set the left side page header to "List if Figures"
-\listoffigures  % Write out the List of Figures
+%\lhead{\emph{List of Figures}}  % Set the left side page header to "List if Figures"
+%\listoffigures  % Write out the List of Figures
 
 %% ----------------------------------------------------------------
-\lhead{\emph{List of Tables}}  % Set the left side page header to "List of Tables"
-\listoftables  % Write out the List of Tables
+%\lhead{\emph{List of Tables}}  % Set the left side page header to "List of Tables"
+%\listoftables  % Write out the List of Tables
+
+%% ----------------------------------------------------------------
+\lhead{\emph{List of Listings}}  % Set the left side page header to "List of Listings"
+\lstlistoflistings
 
 %% ----------------------------------------------------------------
 \setstretch{1.5}  % Set the line spacing to 1.5, this makes the following tables easier to read
