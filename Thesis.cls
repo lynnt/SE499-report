@@ -172,7 +172,7 @@
 \university  {\texorpdfstring{\href{University Web Site URL Here (include http://)}
                 {University Name}}
                 {University Name}}
-\UNIVERSITY  {\texorpdfstring{\href{http://uwaterloo.ca)}
+\UNIVERSITY  {\texorpdfstring{\href{https://www.uwaterloo.ca}
                 {UNIVERSITY OF WATERLOO}}
                 {UNIVERSITY OF WATERLOO}}
 \department  {\texorpdfstring{\href{Department or School Web Site URL Here (include http://)}
