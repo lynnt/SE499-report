@@ -26,8 +26,6 @@ differentiated by its type. An assignment of a new variable to the same variable
 deferred from type.
 
 
-\begin{frame}
-\frametitle{}
 \begin{lstlisting}[caption={Overloading variables in \CFA}, label={CFA-overload-var}]
 short int MAX = 3;
 int MAX = 4;
@@ -38,7 +36,6 @@ short int s = MAX;      // MAX = 3
 int max = MAX;          // MAX = 4
 double max = MAX;       // MAX = 1.0
 \end{lstlisting}
-\end{frame}
 
 The listing \ref{CFA-overload-var} shows that when variable overloading exists
 in the same scope, the selected variable is selected based on its type. For
@@ -51,8 +48,6 @@ Routines in the same block can be overloaded depending on the number and type of
 parameters and returns.
 
 
-\begin{frame}
-\frametitle{}
 \begin{lstlisting}[caption={Overloading routines in \CFA},
 label={CFA-overload-func}]
 void f(<@\textcolor{red}{void}@>);              // (1)
@@ -65,7 +60,6 @@ f('a');                     // pick (2)
 char s = f('a');            // pick (3)
 [int, double] s = f();      // pick (4)
 \end{lstlisting}
-\end{frame}
 
 The listing \ref{CFA-overload-func} shows that when many routine are overloaded in
 the same scope, a routine is selected based on the combination of its return type and its
@@ -83,8 +77,6 @@ the number and type of parameters and returns. However, operators \verb|&&|,
 cannot be preserved. This behaves as same as how \CCS behaves.
 
 
-\begin{frame}
-\frametitle{}
 \begin{lstlisting}[caption={Overloading operators in \CFA},
 label={CFA-overload-ops}]
 int <@\textcolor{red}{++?}@>(int op);           // unary prefix increment
@@ -98,7 +90,6 @@ A <@\textcolor{red}{?+?}@>(S a, S b) {
     return (S) {a.x + b.x, a.y + b.y};
 }
 \end{lstlisting}
-\end{frame}
 
 The listing \ref{CFA-overload-ops} shows that operator overloading is permitted
 similar how \CCS behaves. However, the difference is that the operator name is

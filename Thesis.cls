@@ -30,7 +30,7 @@
   \if@tempswa \else \PassOptionsToClass{#1}{\baseclass}\fi
 }
 \@checkoptions{11pt}{{10pt}{11pt}{12pt}}
-\PassOptionsToClass{a4paper}{\baseclass}
+\PassOptionsToClass{legalpaper}{\baseclass}
 \ProcessOptions\relax
 \LoadClass{\baseclass}
 \newcommand\bhrule{\typeout{------------------------------------------------------------------------------}}
@@ -55,9 +55,11 @@
   \space \number\year}
 \usepackage{setspace}
 %\onehalfspacing
-\doublespacing
+% TODO: please turn this back on
+%\doublespacing
 \setlength{\parindent}{0pt}
 \setlength{\parskip}{2.0ex plus0.5ex minus0.2ex}
+\iffalse
 \usepackage{vmargin}
 \setmarginsrb           { 1.5in}  % left margin
                         { 0.6in}  % top margin
@@ -67,6 +69,7 @@
                         {0.25in}  % head sep
                         {   9pt}  % foot height
                         { 0.3in}  % foot sep
+\fi
 \raggedbottom
 \setlength{\topskip}{1\topskip \@plus 5\p@}
 \doublehyphendemerits=10000       % No consecutive line hyphens.
@@ -222,7 +225,6 @@
       {\LARGE by \par}
       \smallskip
       {\LARGE \authornames \par}
-      {\LARGE \emails \par}
       \vfill
       \bigskip
       \bigskip

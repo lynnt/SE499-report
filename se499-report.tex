@@ -3,20 +3,28 @@
 %% ---------------------------------------------------------------- 
 
 % Set up the document
-\documentclass[a4paper, 11pt, oneside]{Thesis}  % Use the "Thesis" style, based on the ECS Thesis style by Steve Gunn
+\documentclass[legalpaper, 11pt, oneside]{Thesis}  % Use the "Thesis" style, based on the ECS Thesis style by Steve Gunn
 \graphicspath{Figures/}  % Location of the graphics files (set up for graphics to be in PDF format)
 
 % Include any extra LaTeX packages required
 \usepackage[square, numbers, comma, sort&compress]{natbib}  % Use the "Natbib" style for the references in the Bibliography
 \usepackage{verbatim}  % Needed for the "comment" environment to make LaTeX comments
 \usepackage{vector}  % Allows "\bvec{}" and "\buvec{}" for "blackboard" style bold vectors in maths
+\usepackage[pagewise]{lineno}
 \usepackage{listings}
 \hypersetup{urlcolor=blue, colorlinks=true}  % Colours hyperlinks in blue, but this can be distracting if there are many links.
+\usepackage{geometry}
+\geometry{
+      letterpaper,
+        left=1.5in,top=0.6in,right=1.0in,bottom=0.8in,
+          headheight=20pt,headsep=0.25in,foot=9pt,footsep=0.3in,
+            includeheadfoot
 
+}
 %% ----------------------------------------------------------------
 \begin{document}
 \frontmatter      % Begin Roman style (i, ii, iii, iv...) page numbering
-
+\linenumbers    % TODO: remove this please
 % Set up the Title Page
 \title{GNU Debugger support for \uCPPS and \CFA}
 \authors  {\texorpdfstring
@@ -28,7 +36,6 @@
 \date       {\today}
 \subject    {}
 \keywords   {}
-
 \maketitle
 %% ----------------------------------------------------------------
 
@@ -47,22 +54,6 @@
 \Declaration{
 
 \addtocontents{toc}{\vspace{1em}}  % Add a gap in the Contents, for aesthetics
-
-I, Thi My Linh Tran, declare that this thesis titled, `THESIS TITLE' and the work presented in it are my own. I confirm that:
-
-\begin{itemize} 
-\item[\tiny{$\blacksquare$}] This work was done wholly or mainly while in candidature for a research degree at this University.
- 
-\item[\tiny{$\blacksquare$}] Where any part of this thesis has previously been submitted for a degree or any other qualification at this University or any other institution, this has been clearly stated.
- 
-\item[\tiny{$\blacksquare$}] Where I have consulted the published work of others, this is always clearly attributed.
- 
-\item[\tiny{$\blacksquare$}] Where I have quoted from the work of others, the source is always given. With the exception of such quotations, this thesis is entirely my own work.
- 
-\item[\tiny{$\blacksquare$}] I have acknowledged all main sources of help.
- 
-\item[\tiny{$\blacksquare$}] Where the thesis is based on work done by myself jointly with others, I have made clear exactly what was done by others and what I have contributed myself.
-\\
 \end{itemize}
  
  
@@ -122,7 +113,7 @@ I would like to thank Professor Peter Buhr and Thierry
 Delisle for their guidance throughout the development of this project. The
 GNU Debugger's internal manual \cite{reference5} is used as a guide for the development of
 adding a demangler for \CFA, and \CFA's main page \cite{reference13} for
-background knowledge about the language.
+background knowledge and example.
 }
 \clearpage  % End of the Acknowledgements
 %% ----------------------------------------------------------------
@@ -166,7 +157,6 @@ background knowledge about the language.
 %\listofconstants{lrcl}  % Include a list of Physical Constants (a four column table)
 {
 % Constant Name & Symbol & = & Constant Value (with units) \\
-%Speed of Light & $c$ & $=$ & $2.997\ 924\ 58\times10^{8}\ \mbox{ms}^{-\mbox{s}}$ (exact)\\
 
 }
 
@@ -176,10 +166,6 @@ background knowledge about the language.
 \listofnomenclature{lll}  % Include a list of Symbols (a three column table)
 {
 % symbol & name & unit \\
-%$a$ & distance & m \\
-%$P$ & power & W (Js$^{-1}$) \\
-%& & \\ % Gap to separate the Roman symbols from the Greek
-%$\omega$ & angular frequency & rads$^{-1}$ \\
 }
 \fi
 %% ----------------------------------------------------------------
@@ -201,8 +187,8 @@ background knowledge about the language.
 \lhead{\emph{Introduction}}  % Set the left side page header to "Abbreviations"
 \input{Chapters/Introduction} % Introduction
 
-$% Background
-\clearpage  %Start a new page
+% Background
+\clearpage  % Start a new page
 \lhead{\emph{\uCPP}}  % Set the left side page header to "Abbreviations"
 \input{Chapters/uCPP}
 \clearpage  %Start a new page
