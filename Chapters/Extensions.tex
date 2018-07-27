@@ -19,8 +19,8 @@ data structures and functions that enables the development of more complex
 operations and yet saves time on development of the project.
 
 The next task for extending GDB is writing new user-defined commands that allow
-users to switch from one task to another task. This means that there needs to be at
-least two commands. The first command is for switching from the current task to
+users to switch from one task to another task. To achieve the context switching
+between tasks, there needs to be at least two commands. The first command is for switching from the current task to
 the new task that can be called \verb|push_task|, and another command
 is for switching back to the previous task, from which the current task comes
 from, and this command is named \verb|pop_task|.
