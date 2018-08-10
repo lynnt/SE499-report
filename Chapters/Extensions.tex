@@ -1,64 +1,62 @@
 \chapter{Extending GDB for \uCPP}
 \section{Design Constraints}
-As mentioned in Chapter \ref{GDB}, there are many ways to extend GDB. However,
+As mentioned in Chapter \ref{GDB}, there are several ways to extend GDB. However,
 there are a few design constraints on the selected mechanism. Extension
-mechanism for \uCPPS should be simple, easy to implement and versatile.
+mechanism for \uCPPS is simple, easy to implement, and versatile.
 
 Regardless of which mechanism selected for extending GDB, all the functions
-implemented should maintain the same functionality. In addition to functional
-requirements, user usability and flexibility are additional required
-non-functional requirements for this
+implemented should maintain similar functionality to existing GDB commands. In addition to functional
+requirements, user usability and flexibility are additional requirements for this
 project. These final requirements enable developers to be productive quickly
-and can do more with the extensions.
+and do more with the extensions.
+
+\section{}
 
 \section{Design Implementation}
-Firstly, Python API satifies all the given criteria above after researching
-about different solutions. In particular, GDB provides an extensive API for
+The GDB Python API satifies all the given criteria above after examining of different solutions. In particular, GDB provides an extensive API for
 Python compared to other solutions. Furthermore, Python is a scripting language with built-in
 data structures and functions that enables the development of more complex
-operations and yet saves time on development of the project.
+operations and saves time on project development.
 
-The next task for extending GDB is writing new user-defined commands that allow
-users to switch from one task to another task. To achieve the context switching
-between tasks, there needs to be at least two commands. The first command is for switching from the current task to
+The first extensions for GDB is writing new commands that allow
+users to switch from one \uCCS task to another. Two switching approaches are
+provided: structured and free form. The structured form remembers the task tour in a
+LIFO way, meanwhile, the free form does not remember the task tour. This means
+at least two commands are needed for the structured form and one is needed for
+the free form. The first command is for switching from the current task to
 the new task that can be called \verb|push_task|, and another command
 is for switching back to the previous task, from which the current task comes
 from, and this command is named \verb|pop_task|.
 
-Prior to implementing either \verb|pushtask| or \verb|poptask| command, many questions come up about how
-these command should work.
-\begin{itemize}
-\item What format of the argument of the new task should it the command
-\verb|pushtask| be?
-\item Should \verb|pushtask| command allow users to pass the address of the desired task or can users
-pass in an index of the cluster, in which the task is, along with the index of
-the task with respect to that cluster?
-\item Should \verb|pushtask| command save the context of the current task before it switches to
-another task every time? Or should the command only save the context of the
-originating task?
-\end{itemize}
+Prior to implementing either \verb|pushtask| or \verb|poptask| command, the
+task argument had to be resolved. Should the \verb|pushtask| command use a task's address or the index of a cluster, and the index of a task with respect
+to that cluster? Another issue needs to be resolved is if the structured or free
+form approach should be selected.
 
-As a result, there are two variations of \verb|pushtask| command to provide both
-user usability and flexibility. The first variation is called \verb|pushtask| and requires
+As a result, there are two variations of the \verb|pushtask| command to provide both usability and flexibility. The first variation is called \verb|pushtask| and requires
 only one argument, which is the address of the task a user wants to switch to.
 The second variation is called \verb|pushtask_id| and requires both the index of
-the cluster and the index of the task a user would like
-to switch to as arguments. Core functionality of these two commands is
+the cluster and the index of the task to switch to. Core functionality of these two commands is
 essentially the same. The only difference is that the \verb|pushtask_id| command
 needs to iterate through the data structure that stores all the clusters to find
 the right cluster based on its index, and using the found instance of the
-cluster to search for the instance of the expected task. Additionally, the second
-command invokes a function that performs the context switch between tasks, which
-is shared by these two commands. Furthermore, a decision
+cluster to search for the instance of the expected task. Furthermore, a decision
 is made to store the context information for every context switching, this means
-that \verb|pushtask| command needs to perform actions to store these information every time it is
-invoked. Each task has a copy of \verb|uContext_t|, which stores the context
+that \verb|pushtask| command needs to perform actions to store this information every time it is
+invoked.
+\\
+TODO: show code
+\\
+
+Each task has a copy of \verb|uContext_t|, which stores the context
 information such as stack pointer, frame pointer. These pointers are then stored
 in convenience variables for every level of redirection. Similarly, the command
 also retrieves these context information but from the task that a user wants to switch to, and
 sets the equivalent registers to the new values. In particular, the value of the stack
 pointer is set in \verb|rsp| register, the value of the frame pointer is set in \verb|rbp|
 register, and finally the value of the program counter is set in \verb|pc| register.
+\\
+TODO: fix me\\
 Normally, register values are relative to the current stack frame assuming that
 all the stack frames farther already exited and their registers are restored. Therefore, in
 order to see the true value of hardware registers, innermost frame that is
@@ -76,6 +74,7 @@ address of the last task it was switched from, and sets the same set of register
 information.
 
 \section{Result}
+TODO: fixme\\
 The current implementation successfully allows users to switch from one task to
 another task, but does not permit the switch if the destination task is an already terminated
 task. However, if a user would like to continue the execution where it is left

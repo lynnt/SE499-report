@@ -1,12 +1,11 @@
 \chapter{\CFAS Demangler} \label{demangler}
 
 \section{Design Constraints}
-Since \CFAS is a translator for additional features that C does not support, all
+While \CFAS is a translator for additional features that C does not support, all
 the code during the compilation phase is eventually compiled down to C code.
 The resulting executable file marks the tag \verb|DW_AT_language| with a
-fixed hexadecimal value of the language that the compiler determines at compile
-time. Furthermore, it is possible to have one frame is in C code, and another
-frame in Assembly code, so GDB encodes a language flag for each frame. This
+fixed hexadecimal value of the C language. Because it is possible to have one frame is in C code and another
+frame in Assembly code, GDB encodes a language flag for each frame. This
 results into a constraint in implementing the demangler. The first requirement is
 making GDB understands \CFAS as a source language.
 
@@ -24,37 +23,37 @@ hierarchical structure for dynamic scope, so an implementation for nonlocal
 symbol lookup is required to aid GDB.
 
 \section{Design Implementation}
-Most of the implementation work discussed below are from reading GDB's internals
-wiki page and understanding how other languages did in GDB\cite{reference5}.
+Most of the implementation work discussed below is from reading GDB's internals
+wiki page and understanding how other languages are supported in GDB\cite{reference5}.
 
 A new entry is added to GDB's list of definition for languages it supports in
-\verb|gdb/defs.h|. Then a new instance of type \verb|struct language_def|
-should be created to add language definition of \CFAS. This instance is the
+\verb|gdb/defs.h|. Hence, a new instance of type \verb|struct language_def|
+should be created to add a language definition of \CFAS. This instance is the
 entry point for new functions that are only applicable to \CFA. These new
 defined functions are invoked by GDB at runtime if there are operations that
-unique or applicable specifically to \CFA. For instance, \CFAS can implement its
-own symbol lookup function for non-local variables because \CFAS can have
-different scope hierarchy. The final step for registering \CFAS in GDB as a new
-source language is adding the instance of type \verb|struct language_def| into
+are applicable specifically to \CFA. For instance, \CFAS can implement its
+own symbol lookup function for non-local variables because \CFAS can have a
+different scope hierarchy. The final step for registering \CFAS in GDB, as a new
+source language, is adding the instance of type \verb|struct language_def| into
 the list of language definitions, which can be found in
 \verb|gdb/language.h|.
 
 Since most GDB targets use DWARF for its debugging format, the next step is to
-update DWARF reader, so it can translate the DWARF code to an enum value defined
+update the DWARF reader, so it can translate the DWARF code to an enum value defined
 above. However, this assumes that the language has an assigned language code.
 The language code is a hexadecimal literal value assigned to a particular
 language, which is maintained by GCC. For \CFA, a hexidecimal value
 \verb|0x0025| is added to \verb|include/dwarf2.h|.
 
-Finally, the implementation of a demangler goes to \verb|libiberty| folder along with
+Finally, the demangler implementation goes into \verb|libiberty| directory along with
 other demanglers. The demangler can be called by updating the language
-definition defined above with the entry point to the \CFAS demangler.
+definition defined above with the entry point of the \CFAS demangler.
 In addition to the demangler, GDB provides users with an option
 to manually set which demangler style to use in the command line interface.
 This option can be turned on for \CFAS in GDB by adding a new enum value for \CFAS in
 the list of demangling styles along with setting the appropriate mask for this
 style in \verb|include/demangle.h|. After doing this step, users can now choose
-if they want to use \CFAS demangler in GDB by calling \verb|set demangle-style <language>|.
+if they want to use the \CFAS demangler in GDB by calling \verb|set demangle-style <language>|.
 
 \section{Result}
 The addition of hooks throughout GDB enables the invocation of the new \CFAS demangler, however, as the

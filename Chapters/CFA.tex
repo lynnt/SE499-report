@@ -1,47 +1,45 @@
 \chapter{\CFA} \label{CFA}
 Similar to \CC, C is a popular programming language especially in system
 programming. For example, Windows NT kernel and Linux kernel are written in C, and they are the foundation of many higher level
-and popular projects. Therefore, it is unlikely that programming language C is
+and popular projects. Therefore, it is unlikely that the programming language C is
 going to disappear any time soon.
 
-However, C has inherent problems in syntactics, linkage, semantics and many
-more\cite{reference2}. Even though \CCS is meant to fix these problems, \CCS has many
+However, C has inherent problems in syntax, semantics and many
+more \cite{reference2}. Even though \CCS is meant to fix these problems, \CCS has many
 irreversible legacy design choices, and newer versions of \CCS require significantly more effort to convert C-based projects into \CCS.
 
-To solve this problem, \CFAS is designed at the University of Waterloo. The goal
+To solve this problem, the programming language \CFAS is being created at the University of Waterloo. The goal
 of the language is to extend C with modern language features that many new
-languages have been known for such as Rust, Go. This extension provides a
-backward-compatible version of C while fixing existing problems known in C and
+languages have such as Rust, and Go. This extension provides a
+backward-compatible version of C, while fixing existing problems known in C and
 modernizing the language at the same time.
 
 \section{Overloading}
-Overloading is when a compiler permits defining two different routines with
-the same name. Most programming languages only allow operator and/or function overloading.
-In addition to those functionalities, \CFAS also supports variables and literal
+Overloading is when a compiler permits a name to have multiple meanings. Most programming languages only allow operator and/or function overloading.
+In addition, \CFAS also supports variables and literal
 \verb|0/1| overloading.
 
 \subsection{Variable}
-Variables in the same block are allowed to have the same name as long as it is
-differentiated by its type. An assignment of a new variable to the same variable is
-deferred from type.
+Variables in the same block are allowed to have the same name, but different
+types. An assignment of a new variable to the same variable is inferred from its type.
 
 
 \begin{lstlisting}[caption={Overloading variables in \CFA}, label={CFA-overload-var}]
-short int MAX = 3;
-int MAX = 4;
-double MAX = 1.0;
+short int MAX = SHRT_MAX;
+int MAX = INT_MAX;
+double MAX = DBL_MAX;
 
 // select variable MAX based on its left-hand type
-short int s = MAX;      // MAX = 3
-int max = MAX;          // MAX = 4
-double max = MAX;       // MAX = 1.0
+short int s = MAX;      // s = SHRT_MAX
+int s = MAX;            // s = INT_MAX
+double s = MAX;         // s = DBL_MAX
 \end{lstlisting}
 
 The listing \ref{CFA-overload-var} shows that when variable overloading exists
-in the same scope, the selected variable is selected based on its type. For
-instance, if the variable \verb|s| is declared with type \verb|int|, then its
-value is 4 if variable \verb|MAX| is assigned to variable \verb|s|, which can
-be seen on line 2 and 7.
+in the same scope, the variable is selected based on the left side of
+initialization/assignment and operands of the rightside experession. For
+instance, the first assignment to max at line 6, which is type short int,
+selects the MAX with the same type.
 
 \subsection{Routine}
 Routines in the same block can be overloaded depending on the number and type of
@@ -64,17 +62,17 @@ char s = f('a');            // pick (3)
 The listing \ref{CFA-overload-func} shows that when many routine are overloaded in
 the same scope, a routine is selected based on the combination of its return type and its
 arguments. For instance, from line 1-4, four different types of a routine called
-\verb|f| is declared. If a routine \verb|f('a')| is called, then the appropriate
-routine to invoke is the one on line 2 if the return type is \verb|void|, however, if
-the return type is \verb|char|, then the routine on line 3 is selected. This
-example can be seen on line 7-8.
+\verb|f| are declared. For the call \verb|f('a')|, the routine selected is the
+one on line 2, if the calls voids the result. However, if the call assigns to a
+char, then the routine on line 3 is selected. This example can be seen on lines
+7-8.
 
 \subsection{Operator}
-An operator name is denoted with \verb|?| for the operand, and any standard C
+An operator name is denoted with \verb|?| for the operand and any standard C
 operator. Operator names within the same block can be overloaded depending on
 the number and type of parameters and returns. However, operators \verb|&&|,
 \verb-||-, \verb|?:| cannot be overloaded because short-circuit semantics
-cannot be preserved. This behaves as same as how \CCS behaves.
+cannot be preserved.
 
 
 \begin{lstlisting}[caption={Overloading operators in \CFA},
@@ -83,14 +81,17 @@ int <@\textcolor{red}{++?}@>(int op);           // unary prefix increment
 int <@\textcolor{red}{?++}@>(int op);           // unary postfix increment
 int <@\textcolor{red}{?+?}@>(int op1, int op2); // unary postfix increment
 
-struct A { double x, double y }
+struct S { double x, double y }
 
 // overload operator plus-assignment
-A <@\textcolor{red}{?+?}@>(S a, S b) {
+S <@\textcolor{red}{?+?}@>(S a, S b) {
     return (S) {a.x + b.x, a.y + b.y};
 }
+
+S a, b, c;
+a + b + c;
 \end{lstlisting}
 
 The listing \ref{CFA-overload-ops} shows that operator overloading is permitted
-similar how \CCS behaves. However, the difference is that the operator name is
+similar to \CCS. However, the difference is that the operator name is
 denoted with \verb|?| instead.

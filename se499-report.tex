@@ -16,10 +16,9 @@
 \usepackage{geometry}
 \geometry{
       letterpaper,
-        left=1.5in,top=0.6in,right=1.0in,bottom=0.8in,
+        left=1.5in,top=1.6in,right=1.0in,bottom=0.8in,
           headheight=20pt,headsep=0.25in,foot=9pt,footsep=0.3in,
             includeheadfoot
-
 }
 %% ----------------------------------------------------------------
 \begin{document}
@@ -90,11 +89,11 @@ If the quote is taken from someone, their name goes here
 
 The goal of this work is to add GNU Debugger support for \uCPPS and \CFA. To
 achieve this goal for \uCPP, new extensions are written to provide additional
-support for high-level constructs that are unknown to GNU Debugger. In addition to the work done for
-\uCPP, many hooks are added in GNU Debugger to enable the addition of \CFAS
+support for high-level constructs that are unknown to the GNU Debugger. In addition to the work done for
+\uCPP, many hooks are added in the GNU Debugger to enable the addition of \CFAS
 demangler.
 
-This report assumes readers have some basic knowledge of compiler construction.
+This report assumes the reader has basic knowledge of compiler construction.
 Background knowledge about how GNU Debugger works and specific features of \uCPPS and
 \CFAS
 are provided in the report.
@@ -113,7 +112,7 @@ I would like to thank Professor Peter Buhr and Thierry
 Delisle for their guidance throughout the development of this project. The
 GNU Debugger's internal manual \cite{reference5} is used as a guide for the development of
 adding a demangler for \CFA, and \CFA's main page \cite{reference13} for
-background knowledge and example.
+background knowledge and examples.
 }
 \clearpage  % End of the Acknowledgements
 %% ----------------------------------------------------------------
@@ -140,15 +139,15 @@ background knowledge and example.
 
 %% ----------------------------------------------------------------
 \setstretch{1.5}  % Set the line spacing to 1.5, this makes the following tables easier to read
-\clearpage  % Start a new page
-\lhead{\emph{Abbreviations}}  % Set the left side page header to "Abbreviations"
-\listofsymbols{ll}  % Include a list of Abbreviations (a table of two columns)
-{
+%\clearpage  % Start a new page
+%\lhead{\emph{Abbreviations}}  % Set the left side page header to "Abbreviations"
+%\listofsymbols{ll}  % Include a list of Abbreviations (a table of two columns)
+%{
 % \textbf{Acronym} & \textbf{W}hat (it) \textbf{S}tands \textbf{F}or \\
 %\textbf{LAH} & \textbf{L}ist \textbf{A}bbreviations \textbf{H}ere \\
-\textbf{GDB} & GNU Debugger \\
-\textbf{API} & Application Programming Interface \\
-}
+%\textbf{GDB} & GNU Debugger \\
+%\textbf{API} & Application Programming Interface \\
+%}
 
 %% ----------------------------------------------------------------
 \clearpage  % Start a new page

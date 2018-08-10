@@ -1,55 +1,18 @@
 \chapter{\uCPP} \label{uCPP}
 
 \section{Introduction}
-According to the \uCPPS annotated reference manual \cite{reference10}, \uCPPS
-extends \CCS programming language. This language introduces new mechanism to
+\CCS \cite{reference10} extends the \CCS programming language with new mechanism to
 facilitate control flow, and adds new objects to enable lightweight concurrency
-on uniprocessor and parallel execution on multiprocessor.
-
-\iffalse
-\section{Elementary Execution Properties}
-\uCPPS was developed with three execution properties in mind:
-\begin{itemize}
-\item \textcolor{ForestGreen}{Thread}: is an execution of code that occurs
-indepedently and possibly in concurrent with other execution. However, the
-result of the execution is still sequential. The functionality of a thread is to
-advance execution by changing its execution state. There are three basic states
-of a thread. A thread is blocked when it is waiting for an occurrence of some
-events. A thread is running if it is executing instructions on an actual
-processor. A ready thread is when it is available for execution but is not
-executing due to not being selected.
-\item \textcolor{ForestGreen}{Execution State}: is the state information required
-    to allow independent execution. Local data, local block, routine activations
-    and current execution location, which is initialized to the starting point are considered to be part of an execution
-    state. In particular, the local block and routine executions are maintained in a
-    stack, and is the area where the local variables and execution is preserved
-    when an execution state is inactive. Execution state is determined by a progarmming language, and is an elementary property of the semantics of a
-language. Context switch is when control transfers from one execution state to
-another.
-\item \textcolor{ForestGreen}{Mutual Exclusion}: is an mechanism that allows an
-    action to be performed on a resource without being interrupted by by other
-    actions on the same resource. In a concurrent environment, mutual exclusion
-    is required to maintain consistency of results. This mechanism cannot be
-    trivially or efficiently implemented without appropriate programming
-    language constructs.
-\end{itemize}
-
-\section{High-level Execution Constructs}
-There are three elementary execution properties in \uCPP: thread, execution
-state and mutual exclusion. These there properties are properties of an object. However, not all
-combination of these properties are appropriate, and different combination
-results into a different kind of objects.
-\fi
+on uniprocessor and parallel execution on multiprocessor. Concurrency has tasks
+that can context switch, which is a control transfer from one execution state to
+another one, and waiting tasks are selected to run on a processor if the current
+task needs to wait for an occurrence of an event.
 
 \section{Tasks}
-\textcolor{ForestGreen}{Task} behaves like a class object, but it maintains its own
+A \textcolor{ForestGreen}{task} behaves like a class object, but it maintains its own
 thread and execution state, which is the state information required to allow
 independent executions. A task provides mutual exclusion by default for its
-public member methods. Tasks are used for communication between tasks and
-concurency improvement since a task can context switch, which is a control transfer from
-one execution state to another one, to another task waiting to be selected to
-run on a processor if the current task needs to wait for an occurrence of an
-event.
+public members. Public members allow communication among tasks.
 
 \section{\uCPPS Runtime Structure}
 \uCPPS introduces two new runtime entities for controlling concurrent execution:
@@ -63,16 +26,15 @@ A cluster is a group of tasks and virtual processor (discussed next) that
 execute tasks. The objective of a cluster is to control the amount of possible
 parallelism, which is only feasible if there are many multiprocessors, among tasks.
 
-At the start of a \uCPPS program, two clusters are created. One is system
-cluster and the other cluster is user cluster. The system cluster uses a
-processor that only performs management tasks such as error detection and
-correction from user clusters if an execution in a user cluster results into
-errors, and proper cleaning up when a shutdown occurs. A user cluster manages and executes user tasks on processors. The benefits of clusters
-are maximized utilization of processors and miminization of runtime by
-permitting many tasks to execute in a cluster. Due to the scheduling tasks model
-in a cluster, load balacing tasks are performed to achieve the best result.
-However, automatic load balancing between clusters does not exist, so manual
-mitigration is performed by users.
+At the start of a \uCPPS program, two clusters are created. One is the system
+cluster and the other is the user cluster. The system cluster has a
+processor that only performs management work such as error detection and
+correction from user clusters if an execution in a user cluster results errors,
+and properly cleans up when a shutdown occurs. The user cluster manages and
+executes user tasks on its processors. The benefits of clusters
+are maximized utilization of processors and miminization of runtime by selecting
+a scheduler that is appropriate for the particular workload. Tasks and virtual
+processors may be mitigated between clusters.
 
 \subsection{Virtual Processor}
 A virtual processor is a software emulation of a processor that executes
