@@ -154,6 +154,17 @@
         commentstyle=\color{ForestGreen}\ttfamily,
         morecomment=[l][\color{magneta}]{\#}
 }
+\lstset{language=Python,
+        basicstyle=\ttfamily,
+        numbers=left,
+        stepnumber=1,
+        firstnumber=1,
+        keywordstyle=\color{blue}\ttfamily,
+        stringstyle=\color{red}\ttfamily,
+        commentstyle=\color{ForestGreen}\ttfamily,
+        morecomment=[l][\color{magneta}]{\#}
+}
+
 \newcommand*{\supervisor}[1]{\def\supname{#1}}
 \newcommand*{\emails}[1]{\def\supname{#1}}
 \newcommand*{\examiner}[1]{\def\examname{#1}}

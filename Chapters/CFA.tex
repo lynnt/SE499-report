@@ -24,7 +24,7 @@ Variables in the same block are allowed to have the same name, but different
 types. An assignment of a new variable to the same variable is inferred from its type.
 
 
-\begin{lstlisting}[caption={Overloading variables in \CFA}, label={CFA-overload-var}]
+\begin{lstlisting}[language=C++, caption={Overloading variables in \CFA}, label={CFA-overload-var}]
 short int MAX = SHRT_MAX;
 int MAX = INT_MAX;
 double MAX = DBL_MAX;
@@ -46,7 +46,7 @@ Routines in the same block can be overloaded depending on the number and type of
 parameters and returns.
 
 
-\begin{lstlisting}[caption={Overloading routines in \CFA},
+\begin{lstlisting}[language=C++, caption={Overloading routines in \CFA},
 label={CFA-overload-func}]
 void f(<@\textcolor{red}{void}@>);              // (1)
 void f(<@\textcolor{red}{char}@>);              // (2)
@@ -75,7 +75,7 @@ the number and type of parameters and returns. However, operators \verb|&&|,
 cannot be preserved.
 
 
-\begin{lstlisting}[caption={Overloading operators in \CFA},
+\begin{lstlisting}[language=C++, caption={Overloading operators in \CFA},
 label={CFA-overload-ops}]
 int <@\textcolor{red}{++?}@>(int op);           // unary prefix increment
 int <@\textcolor{red}{?++}@>(int op);           // unary postfix increment

@@ -167,9 +167,39 @@ cluster to search for the instance of the expected task. Furthermore, a decision
 is made to store the context information for every context switching, this means
 that \verb|pushtask| command needs to perform actions to store this information every time it is
 invoked.
-\\
-TODO: show code
-\\
+\begin{lstlisting}[language=Python, caption={Abridged \text{push\_task} Code},
+label={pushtask-code}]
+# get GDB type of uContext_t*
+uContext_t_ptr_type = gdb.lookup_type('UPP::uMachContext::uContext_t').pointer
+
+# retrieve the context object from a task
+task_context = task['context'].cast(uContext_t_ptr_type)
+
+# lookup the value of stack pointer (sp), frame pointer (fp), program counter
+(pc)
+xsp = task_context['SP'] + 48
+xfp = task_context['FP']
+if not gdb.lookup_symbol('uSwitch'):
+    print('uSwitch symbol is not available')
+    return
+
+xpc = get_addr(gdb.parse_and_eval('uSwitch').address + 28, 'PC')
+# must switch back to frame-0 to set 'pc' register with the value of xpc
+gdb.execute('select-frame 0')
+
+# retrieve register values and push sp, fp, pc into a global stack
+global STACK
+sp = gdb.parse_and_eval('$sp')
+fp = gdb.parse_and_eval('$fp')
+pc = gdb.parse_and_eval('$pc')
+stack_info = StackInfo(sp = sp, fp = fp, pc = pc)
+STACK.append(stack_info)
+
+# update registers for a new task
+gdb.execute('set $rsp={}'.format(xsp))
+gdb.execute('set $rbp={}'.format(xfp))
+gdb.execute('set $pc={}'.format(xpc))
+\end{lstlisting}
 
 Each task has a copy of \verb|uContext_t|, which stores the context
 information such as stack pointer, frame pointer. These pointers are then stored
@@ -178,12 +208,10 @@ also retrieves these context information but from the task that a user wants to 
 sets the equivalent registers to the new values. In particular, the value of the stack
 pointer is set in \verb|rsp| register, the value of the frame pointer is set in \verb|rbp|
 register, and finally the value of the program counter is set in \verb|pc| register.
-\\
-TODO: fix me\\
-Normally, register values are relative to the current stack frame assuming that
-all the stack frames farther already exited and their registers are restored. Therefore, in
+For every new function call, a new stack frame is created and the values of all
+the registers are changed for that frame. Therefore, in
 order to see the true value of hardware registers, innermost frame that is
-frame-0 must be selected\cite{reference11}. However, it is possible to not to be in frame-0, so prior to setting these values,
+frame-0 must be selected\cite{reference11}. However, it is possible to not be in frame-0, so prior to setting these values,
 the command must switch back to the innermost (currently executing) frame first.
 
 Finally, the implementation of \verb|poptask| is more straightforward and does
@@ -197,9 +225,10 @@ address of the last task it was switched from, and sets the same set of register
 information.
 
 \section{Result}
-TODO: fixme\\
-The current implementation successfully allows users to switch from one task to
-another task, but does not permit the switch if the destination task is an already terminated
-task. However, if a user would like to continue the execution where it is left
-off assuming that the program has yet crashed, then the user needs to perform
-\verb|poptask| all the way back to the originating task before moving forward.
+The current implementation successfully allows users to perform context
+switching between tasks as long as the destination task is an already terminated
+task. Additionally, users are allowed to continue the execution where the
+program last pauses assuming that the program has not crashed. The continuation
+of execution can be done automatically by the extensions by running any already
+existed GDB commands such as \verb|continue| or a user can manually
+perform the reverse of context switch using the command \verb|poptask|.
