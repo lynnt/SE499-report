@@ -10,7 +10,130 @@ requirements, user usability and flexibility are additional requirements for thi
 project. These final requirements enable developers to be productive quickly
 and do more with the extensions.
 
-\section{}
+\section{Command usage}
+\subsection{\uCPPS source code example}
+Below is the \uCPPS source code used to demonstrate how GDB commands work.
+\begin{lstlisting}[caption={\uCPPS source code for GDB examples},
+label={uC++-src-code}]
+_Task T
+{
+    void a()
+    {
+        while (1);
+    }
+
+    void main()
+    {
+        a();
+    }
+    public:
+        T() {}
+        T(const char* taskName, uCluster& x) : uBaseTask(taskName)
+        {
+            setName(taskName);
+        }
+};
+
+int main()
+{
+    uProcessor procs[3];
+    const int numTasks = 10;
+    T tasks[numTasks];
+}
+\end{lstlisting}
+\subsection{Listing all clusters in a \uCPPS program}
+
+\begin{lstlisting}[caption={clusters command}]
+(gdb) clusters
+        Name            Address
+    systemCluster       0x654200
+    userCluster         0x7c3280
+\end{lstlisting}
+
+\subsection{Listing all tasks in a cluster}
+\begin{lstlisting}[caption={\text{cluster\_tasks} command}, label={cluster-tasks}]
+(gdb) cluster_tasks 0x654200
+    ID          Name            Address         State
+    0       uProcessorTask      0x654200        uBaseTask::Blocked
+    1       uSystemTask         0x7c3280        uBaseTask::Blocked
+\end{lstlisting}
+In listing \ref{cluster-tasks}, the command \verb|cluster_tasks| requires one
+argument that is an address of a cluster. In this exampple, this command lists
+all the name of the tasks in a cluster called \verb|systemCluster|.
+Additionally, \verb|cluster_tasks| command also provides the associated address
+for each task and its state.
+
+\subsection{Listing all processors in a cluster}
+\begin{lstlisting}[caption={\text{cluster\_procs} command}, label={cluster-procs}]
+(gdb) cluster_procs 0x7c3280
+    Address    PID         Preemption      Spin
+    0x7c5bf0    8c92832     10              1000
+    0x8c2b50    9449600     10              1000
+    0x8c2d10    9973888     10              1000
+    0x8c2ed0    10502272    10              1000
+\end{lstlisting}
+In the listing \ref{cluster-procs}, the command \verb|cluster_procs| expects one
+argument, which is similar to command \verb|cluster_tasks|. This command shows
+all the processors in a cluster. In particular, this example shows that there
+are four processors in the cluster called \verb|userCluster|, and an address,
+its PID, its premption priority and spin, which is how long a processor
+repeatedly checks to see if a condition is true.
+\subsection{Listing all clusters in a \uCPPS program}
+
+\begin{lstlisting}[caption={clusters command}]
+(gdb) clusters
+        Name            Address
+    systemCluster       0x654200
+    userCluster         0x7c3280
+\end{lstlisting}
+
+\subsection{Listing all tasks in all clusters}
+\begin{lstlisting}[caption={\text{tasks} command}, label={tasks}]
+(gdb) tasks
+            Cluster Name        Address
+            systemCluster       0x654200
+        ID      Task Name            Address         State
+        0       uProcessorTask      0x654200        uBaseTask::Blocked
+        1       uSystemTask         0x7c3280        uBaseTask::Blocked
+            Cluster Name        Address
+            userCluster         0x7c3280
+        ID      Task Name            Address         State
+        0       uProcessorTask      0x805e70        uBaseTask::Blocked
+        ...
+        6       T                   0x8c0d00        uBaseTask::Running
+        7       T                   0x8c1000        uBaseTask::Running
+        8       T                   0x8c1300        uBaseTask::Ready
+        ...
+\end{lstlisting}
+In the listing \ref{tasks}, the command \verb|tasks| does not require any
+arugment since it lists out all the known tasks in a \uCPPS program at this
+point of the snapshot of the execution.
+
+\subsection{Context switching between tasks}
+\begin{lstlisting}[caption={\text{pushtask} command}, label={pushtask}]
+(gdb) pushtask 0x8c1300
+\end{lstlisting}
+The first variation of a command that allows context switching is \verb|pushtask|. This command requires an
+address of a task that is not in terminated state that results into switching
+into the stack of the exepected task. This command is shown in listing
+\ref{pushtask}.
+
+\begin{lstlisting}[caption={\text{pushtask\_id} command}, label={pushtask-id}]
+(gdb) pushtask_id 1
+\end{lstlisting}
+Another variation of the same command above is \verb|pushtask_id|. This command
+expects an identifier of a task, which can be obtained from either the command \verb|tasks| or
+\verb|cluster_tasks|. This variation provides a simpler and easier to use
+interface with the same functionality.
+\subsection{Reverse context switch of tasks}
+\begin{lstlisting}[caption={\text{poptask} command}, label={poptask}]
+(gdb) poptask
+\end{lstlisting}
+This command allows users to go back to the previously context-switched task.
+However, if a user performs any command that continues where the program last
+stops/pauses, the program automatically reverses back to the task that initiates
+the first context switch to allow continuation of a program based on the
+command.
 
 \section{Design Implementation}
 The GDB Python API satifies all the given criteria above after examining of different solutions. In particular, GDB provides an extensive API for
