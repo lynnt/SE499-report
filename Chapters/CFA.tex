@@ -38,7 +38,7 @@ double s = MAX;         // s = DBL_MAX
 The listing \ref{CFA-overload-var} shows that when variable overloading exists
 in the same scope, the variable is selected based on the left side of
 initialization/assignment and operands of the rightside experession. For
-instance, the first assignment to max at line 6, which is type short int,
+instance, the first assignment to variable \verb|s| at line 6, which is type short int,
 selects the MAX with the same type.
 
 \subsection{Routine}
@@ -53,10 +53,10 @@ void f(<@\textcolor{red}{char}@>);              // (2)
 <@\textcolor{red}{char}@> f(void);              // (3)
 <@\textcolor{red}{[int,double]}@> f();           // (4)
 
-f();                        // pick (1)
-f('a');                     // pick (2)
-char s = f('a');            // pick (3)
-[int, double] s = f();      // pick (4)
+f();                      // pick (1)
+f('a');                   // pick (2)
+char s = f('a');          // pick (3)
+[int, double] s = f();    // pick (4)
 \end{lstlisting}
 
 The listing \ref{CFA-overload-func} shows that when many routine are overloaded in
@@ -93,5 +93,5 @@ a + b + c;
 \end{lstlisting}
 
 The listing \ref{CFA-overload-ops} shows that operator overloading is permitted
-similar to \CCS. However, the difference is that the operator name is
+similar to \CC. However, the difference is that the operator name is
 denoted with \verb|?| instead.
