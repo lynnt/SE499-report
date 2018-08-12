@@ -9,13 +9,13 @@ frame in Assembly code, GDB encodes a language flag for each frame. This
 results into a constraint in implementing the demangler. The first requirement is
 making GDB understands \CFAS as a source language.
 
-Next, because GDB relies on debug information, which most GDB targets use DWARF
-format, there is DWARF reader is a component in GDB. This reader parses the DWARF format from the object or
-executable file to retrieve and set
-appropriate information in the DIE structure within GDB as mentioned in Chapter
-\ref{GDB}. However, the encoded value is a hexadecimal value, and GDB needs to
-know how to map that value into a format GDB understands.
-Another requirement is updating the DWARF reader in GDB to recognize \CFA.
+Next, there is a DWARF reader component in GDB since most GDB targets use the DWARF
+format. The DWARF reader sets all the appropriate information read from object or
+executable files in a DIE structure within GDB as mentioned in Chapter
+\ref{GDB}. However, GDB currently does not understand the DWARF language code
+assigned to the
+language \CFA, so another requirement is updating the DWARF reader in GDB to
+recognize \CFA.
 
 Additionally, when a user enters a name into GDB, GDB needs to lookup if the
 name exists in the program. However, different languages may have different
@@ -38,8 +38,7 @@ source language, is adding the instance of type \verb|struct language_def| into
 the list of language definitions, which can be found in
 \verb|gdb/language.h|.
 
-Since most GDB targets use DWARF for its debugging format, the next step is to
-update the DWARF reader, so it can translate the DWARF code to an enum value defined
+The next step is updating the DWARF reader, so the reader can translate the DWARF code to an enum value defined
 above. However, this assumes that the language has an assigned language code.
 The language code is a hexadecimal literal value assigned to a particular
 language, which is maintained by GCC. For \CFA, a hexidecimal value
