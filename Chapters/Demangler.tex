@@ -3,7 +3,7 @@
 \section{Design Constraints}
 While \CFAS is a translator for additional features that C does not support, all
 the code during the compilation phase is eventually compiled down to C code.
-The resulting executable file marks the tag \verb|DW_AT_language| with a
+The resulting executable file marks the DWARF tag \verb|DW_AT_language| with a
 fixed hexadecimal value of the C language. Because it is possible to have one frame is in C code and another
 frame in Assembly code, GDB encodes a language flag for each frame. This
 results into a constraint in implementing the demangler. The first requirement is
