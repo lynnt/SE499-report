@@ -12,9 +12,8 @@ and do more with the extensions.
 
 \section{Command usage}
 \subsection{\uCPPS source code example}
-Below is the \uCPPS source code used to demonstrate how GDB commands work.
-\begin{lstlisting}[caption={\uCPPS source code for GDB examples},
-label={uC++-src-code}]
+\begin{lstlisting}[caption={\uCPPS source code used for GDB commands},
+label={uCPP-src-code}]
 _Task T
 {
     void a()
@@ -41,14 +40,17 @@ int main()
     T tasks[numTasks];
 }
 \end{lstlisting}
+Listing \ref{uCPP-src-code} shows the \uCPPS source code used to demonstrate
+how existing GDB commands, which are specifcally for \uCPPS, work.
 \subsection{Listing all clusters in a \uCPPS program}
-
-\begin{lstlisting}[caption={clusters command}]
+\begin{lstlisting}[caption={clusters command}, label={clusters-command}]
 (gdb) clusters
         Name            Address
     systemCluster       0x654200
     userCluster         0x7c3280
 \end{lstlisting}
+Listing \ref{clusters-command} shows a list of all clusters available in the system
+along with the associated address.
 
 \subsection{Listing all tasks in a cluster}
 \begin{lstlisting}[caption={\text{cluster\_tasks} command}, label={cluster-tasks}]
@@ -78,14 +80,6 @@ all the processors in a cluster. In particular, this example shows that there
 are four processors in the cluster called \verb|userCluster|, and an address,
 its PID, its premption priority and spin, which is how long a processor
 repeatedly checks to see if a condition is true.
-\subsection{Listing all clusters in a \uCPPS program}
-
-\begin{lstlisting}[caption={clusters command}]
-(gdb) clusters
-        Name            Address
-    systemCluster       0x654200
-    userCluster         0x7c3280
-\end{lstlisting}
 
 \subsection{Listing all tasks in all clusters}
 \begin{lstlisting}[caption={\text{tasks} command}, label={tasks}]
@@ -109,55 +103,33 @@ In the listing \ref{tasks}, the command \verb|tasks| does not require any
 arugment since it lists out all the known tasks in a \uCPPS program at this
 point of the snapshot of the execution.
 
-\subsection{Context switching between tasks}
-\begin{lstlisting}[caption={\text{pushtask} command}, label={pushtask}]
-(gdb) pushtask 0x8c1300
-\end{lstlisting}
-The first variation of a command that allows context switching is \verb|pushtask|. This command requires an
-address of a task that is not in terminated state that results into switching
-into the stack of the exepected task. This command is shown in listing
-\ref{pushtask}.
-
-\begin{lstlisting}[caption={\text{pushtask\_id} command}, label={pushtask-id}]
-(gdb) pushtask_id 1
-\end{lstlisting}
-Another variation of the same command above is \verb|pushtask_id|. This command
-expects an identifier of a task, which can be obtained from either the command \verb|tasks| or
-\verb|cluster_tasks|. This variation provides a simpler and easier to use
-interface with the same functionality.
-\subsection{Reverse context switch of tasks}
-\begin{lstlisting}[caption={\text{poptask} command}, label={poptask}]
-(gdb) poptask
-\end{lstlisting}
-This command allows users to go back to the previously context-switched task.
-However, if a user performs any command that continues where the program last
-stops/pauses, the program automatically reverses back to the task that initiates
-the first context switch to allow continuation of a program based on the
-command.
-
 \section{Design Implementation}
 The GDB Python API satifies all the given criteria above after examining of different solutions. In particular, GDB provides an extensive API for
-Python compared to other solutions. Furthermore, Python is a scripting language with built-in
+the programming language Python compared to other solutions. Furthermore, Python is a scripting language with built-in
 data structures and functions that enables the development of more complex
 operations and saves time on project development.
 
-The first extensions for GDB is writing new commands that allow
+The first extension for GDB is writing new commands that allow
 users to switch from one \uCCS task to another. Two switching approaches are
 provided: structured and free form. The structured form remembers the task tour in a
 LIFO way, meanwhile, the free form does not remember the task tour. This means
 at least two commands are needed for the structured form and one is needed for
 the free form. The first command is for switching from the current task to
-the new task that can be called \verb|push_task|, and another command
-is for switching back to the previous task, from which the current task comes
-from, and this command is named \verb|pop_task|.
+the new task that can be called \verb|pushtask|, and another command
+is for switching back to the previous task, from which the current task comes, and this command is named \verb|poptask|.
 
 Prior to implementing either \verb|pushtask| or \verb|poptask| command, the
 task argument had to be resolved. Should the \verb|pushtask| command use a task's address or the index of a cluster, and the index of a task with respect
 to that cluster? Another issue needs to be resolved is if the structured or free
 form approach should be selected.
 
-As a result, there are two variations of the \verb|pushtask| command to provide both usability and flexibility. The first variation is called \verb|pushtask| and requires
+As a result, both the structured and free form approaches are supported to
+provide more flexibility to users. Furthermore, there are two variations of the \verb|pushtask| command to provide both usability and flexibility. The first variation is called \verb|pushtask| and requires
 only one argument, which is the address of the task a user wants to switch to.
+This option provides users with more flexibility if they know a
+particular address they want to switch to. Listing \ref{pushtask} shows an example
+of usage.
+
 The second variation is called \verb|pushtask_id| and requires both the index of
 the cluster and the index of the task to switch to. Core functionality of these two commands is
 essentially the same. The only difference is that the \verb|pushtask_id| command
@@ -166,17 +138,20 @@ the right cluster based on its index, and using the found instance of the
 cluster to search for the instance of the expected task. Furthermore, a decision
 is made to store the context information for every context switching, this means
 that \verb|pushtask| command needs to perform actions to store this information every time it is
-invoked.
-\begin{lstlisting}[language=Python, caption={Abridged \text{push\_task} Code},
+invoked. Listing \ref{pushtask-id} shows an example of usage.
+
+\begin{lstlisting}[language=Python, caption={Abridged \text{push\_task} source
+code},
 label={pushtask-code}]
 # get GDB type of uContext_t*
-uContext_t_ptr_type = gdb.lookup_type('UPP::uMachContext::uContext_t').pointer
+uContext_t_ptr_type = \
+gdb.lookup_type('UPP::uMachContext::uContext_t').pointer
 
 # retrieve the context object from a task
 task_context = task['context'].cast(uContext_t_ptr_type)
 
-# lookup the value of stack pointer (sp), frame pointer (fp), program counter
-(pc)
+# lookup the value of stack pointer (sp), frame pointer (fp),
+# program counter (pc)
 xsp = task_context['SP'] + 48
 xfp = task_context['FP']
 if not gdb.lookup_symbol('uSwitch'):
@@ -184,7 +159,8 @@ if not gdb.lookup_symbol('uSwitch'):
     return
 
 xpc = get_addr(gdb.parse_and_eval('uSwitch').address + 28, 'PC')
-# must switch back to frame-0 to set 'pc' register with the value of xpc
+# must switch back to frame-0 to set 'pc' register with
+# the value of xpc
 gdb.execute('select-frame 0')
 
 # retrieve register values and push sp, fp, pc into a global stack
@@ -202,8 +178,10 @@ gdb.execute('set $pc={}'.format(xpc))
 \end{lstlisting}
 
 Each task has a copy of \verb|uContext_t|, which stores the context
-information such as stack pointer, frame pointer. These pointers are then stored
-in convenience variables for every level of redirection. Similarly, the command
+information such as stack pointer, frame pointer. These pointers are then
+stored in an instance of the named tuple \verb|stackInfo| for every level of
+redirection. The tuple also stores information about the program counter that
+is calculated from the address of the \verb|uSwitch| Assembly routine. Similarly, the command
 also retrieves these context information but from the task that a user wants to switch to, and
 sets the equivalent registers to the new values. In particular, the value of the stack
 pointer is set in \verb|rsp| register, the value of the frame pointer is set in \verb|rbp|
@@ -211,7 +189,7 @@ register, and finally the value of the program counter is set in \verb|pc| regis
 For every new function call, a new stack frame is created and the values of all
 the registers are changed for that frame. Therefore, in
 order to see the true value of hardware registers, innermost frame that is
-frame-0 must be selected\cite{reference11}. However, it is possible to not be in frame-0, so prior to setting these values,
+frame-0 must be selected \cite{reference11}. However, it is possible to not be in frame-0, so prior to setting these values,
 the command must switch back to the innermost (currently executing) frame first.
 
 Finally, the implementation of \verb|poptask| is more straightforward and does
@@ -222,13 +200,40 @@ already in the starting task, the command does nothing. Otherwise,
 retrieves the
 address of the last task it was switched from, and sets the same set of registers as
 \verb|pushtask| command did but to the values of the last task's context
-information.
+information. An example of this command can be seen in listing \ref{poptask}.
+
+\begin{lstlisting}[caption={\text{pushtask} command}, label={pushtask}]
+(gdb) pushtask 0x8c1300
+\end{lstlisting}
+The first variation of a command that allows context switching is \verb|pushtask|. This command requires an
+address of a task that is not in terminated state that results into switching
+into the stack of the exepected task. This command is shown in listing
+\ref{pushtask}.
+
+\begin{lstlisting}[caption={\text{pushtask\_id} command}, label={pushtask-id}]
+(gdb) pushtask_id 1
+\end{lstlisting}
+
+Another variation of the same command above is \verb|pushtask_id|. This command
+expects an identifier of a task, which can be obtained from either the command \verb|tasks| or
+\verb|cluster_tasks|. This variation provides a simpler and easier to use
+interface with the same functionality.
+
+\begin{lstlisting}[caption={\text{poptask} command}, label={poptask}]
+(gdb) poptask
+\end{lstlisting}
+
+This command allows users to go back to the previously context-switched task.
+However, if a user performs any command that continues where the program last
+stops/pauses, the program automatically reverses back to the task that initiates
+the first context switch to allow continuation of a program based on the
+command.
 
 \section{Result}
 The current implementation successfully allows users to perform context
-switching between tasks as long as the destination task is an already terminated
+switching among tasks as long as the destination task is not a terminated
 task. Additionally, users are allowed to continue the execution where the
 program last pauses assuming that the program has not crashed. The continuation
 of execution can be done automatically by the extensions by running any already
-existed GDB commands such as \verb|continue| or a user can manually
+existing GDB commands such as \verb|continue| or a user can manually
 perform the reverse of context switch using the command \verb|poptask|.
