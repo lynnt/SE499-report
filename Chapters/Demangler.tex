@@ -11,7 +11,7 @@ making GDB understands \CFAS as a source language.
 
 Next, there is a DWARF reader component in GDB since most GDB targets use the DWARF
 format. The DWARF reader sets all the appropriate information read from object or
-executable files in a DIE structure within GDB as mentioned in Chapter
+executable files in DIE structures within GDB as mentioned in Chapter
 \ref{GDB}. However, GDB currently does not understand the DWARF language code
 assigned to the
 language \CFA, so another requirement is updating the DWARF reader in GDB to
@@ -24,7 +24,7 @@ symbol lookup is required to aid GDB.
 
 \section{Design Implementation}
 Most of the implementation work discussed below is from reading GDB's internals
-wiki page and understanding how other languages are supported in GDB\cite{reference5}.
+wiki page and understanding how other languages are supported in GDB \cite{reference5}.
 
 A new entry is added to GDB's list of definition for languages it supports in
 \verb|gdb/defs.h|. Hence, a new instance of type \verb|struct language_def|
@@ -44,7 +44,7 @@ The language code is a hexadecimal literal value assigned to a particular
 language, which is maintained by GCC. For \CFA, a hexidecimal value
 \verb|0x0025| is added to \verb|include/dwarf2.h|.
 
-Finally, the demangler implementation goes into \verb|libiberty| directory along with
+Finally, the demangler implementation goes into the \verb|libiberty| directory along with
 other demanglers. The demangler can be called by updating the language
 definition defined above with the entry point of the \CFAS demangler.
 In addition to the demangler, GDB provides users with an option

@@ -114,8 +114,8 @@ users to switch from one \uCCS task to another. Two switching approaches are
 provided: structured and free form. The structured form remembers the task tour in a
 LIFO way, meanwhile, the free form does not remember the task tour. This means
 at least two commands are needed for the structured form and one is needed for
-the free form. The first command is for switching from the current task to
-the new task that can be called \verb|pushtask|, and another command
+the free form. The first core command is for switching from the current task to
+a new task that can be called \verb|pushtask|, and another command
 is for switching back to the previous task, from which the current task comes, and this command is named \verb|poptask|.
 
 Prior to implementing either \verb|pushtask| or \verb|poptask| command, the
@@ -123,8 +123,8 @@ task argument had to be resolved. Should the \verb|pushtask| command use a task'
 to that cluster? Another issue needs to be resolved is if the structured or free
 form approach should be selected.
 
-As a result, both the structured and free form approaches are supported to
-provide more flexibility to users. Furthermore, there are two variations of the \verb|pushtask| command to provide both usability and flexibility. The first variation is called \verb|pushtask| and requires
+As a result, both the structured and free form approaches are supported, which
+adds higher degree of freedom to users. Furthermore, there are two variations of the \verb|pushtask| command to provide both usability and flexibility. The first variation is called \verb|pushtask| and requires
 only one argument, which is the address of the task a user wants to switch to.
 This option provides users with more flexibility if they know a
 particular address they want to switch to. Listing \ref{pushtask} shows an example
@@ -177,7 +177,7 @@ gdb.execute('set $rbp={}'.format(xfp))
 gdb.execute('set $pc={}'.format(xpc))
 \end{lstlisting}
 
-Each task has a copy of \verb|uContext_t|, which stores the context
+In listing \ref{pushtask-code}, each task has a copy of \verb|uContext_t|, which stores the context
 information such as stack pointer, frame pointer. These pointers are then
 stored in an instance of the named tuple \verb|stackInfo| for every level of
 redirection. The tuple also stores information about the program counter that
@@ -202,32 +202,24 @@ address of the last task it was switched from, and sets the same set of register
 \verb|pushtask| command did but to the values of the last task's context
 information. An example of this command can be seen in listing \ref{poptask}.
 
+In addition to implementing these new GDB commands, additional hooks are added
+to existing built-in GDB commands that continue the execution of a program in any form. These hooks
+call a new command called \verb|reset| prior to executing the command to enable
+continuation of a program to ensure that
+the program's context is automatically switched back to the context of the task
+that initiates the first
+context switch.
 \begin{lstlisting}[caption={\text{pushtask} command}, label={pushtask}]
 (gdb) pushtask 0x8c1300
 \end{lstlisting}
-The first variation of a command that allows context switching is \verb|pushtask|. This command requires an
-address of a task that is not in terminated state that results into switching
-into the stack of the exepected task. This command is shown in listing
-\ref{pushtask}.
 
 \begin{lstlisting}[caption={\text{pushtask\_id} command}, label={pushtask-id}]
 (gdb) pushtask_id 1
 \end{lstlisting}
 
-Another variation of the same command above is \verb|pushtask_id|. This command
-expects an identifier of a task, which can be obtained from either the command \verb|tasks| or
-\verb|cluster_tasks|. This variation provides a simpler and easier to use
-interface with the same functionality.
-
 \begin{lstlisting}[caption={\text{poptask} command}, label={poptask}]
 (gdb) poptask
 \end{lstlisting}
-
-This command allows users to go back to the previously context-switched task.
-However, if a user performs any command that continues where the program last
-stops/pauses, the program automatically reverses back to the task that initiates
-the first context switch to allow continuation of a program based on the
-command.
 
 \section{Result}
 The current implementation successfully allows users to perform context
