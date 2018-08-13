@@ -4,15 +4,15 @@
 \uCPPS \cite{reference10} extends the \CCS programming language with new
 mechanisms to
 facilitate control flow, and adds new objects to enable lightweight concurrency
-on uniprocessor and parallel execution on multiprocessor. Concurrency has tasks
+on uniprocessor and parallel execution on multiprocessor computers. Concurrency has tasks
 that can context switch, which is a control transfer from one execution state to
-another, and waiting tasks are selected to run on a processor if the current
-task needs to wait for an occurrence of an event.
+another that is different from the routine call. Tasks are selected to run on a
+processor from a ready queue of available tasks, and tasks may need to wait for an occurrence of an event.
 
 \section{Tasks}
 A \textcolor{ForestGreen}{task} behaves like a class object, but it maintains its own
 thread and execution state, which is the state information required to allow
-independent executions. A task provides mutual exclusion by default for its
+independent execution. A task provides mutual exclusion by default for its
 public members. Public members allow communication among tasks.
 
 \section{\uCPPS Runtime Structure}
@@ -25,17 +25,17 @@ public members. Public members allow communication among tasks.
 \subsection{Cluster}
 A cluster is a group of tasks and virtual processors (discussed next) that
 execute tasks. The objective of a cluster is to control the amount of possible
-parallelism, which is only feasible if there are many multiprocessors, among tasks.
+parallelism mong tasks, which is only feasible if there are many
+multiprocessors.
 
 At the start of a \uCPPS program, two clusters are created. One is the system
 cluster and the other is the user cluster. The system cluster has a
 processor that only performs management work such as error detection and
-correction from user clusters if an execution in a user cluster results in errors,
-and properly cleans up when a shutdown occurs. The user cluster manages and
+correction from user clusters, if an execution in a user cluster results in errors,
+and cleans up at shutdown. The user cluster manages and
 executes user tasks on its processors. The benefits of clusters
-are maximized utilization of processors and miminization of runtime by selecting
-a scheduler that is appropriate for a particular workload. Tasks and virtual
-processors may be mitigated between clusters.
+are maximized utilization of processors and miminization of runtime through a scheduler that is appropriate for a particular workload. Tasks and virtual
+processors may be migrated among clusters.
 
 \subsection{Virtual Processor}
 A virtual processor is a software emulation of a processor that executes

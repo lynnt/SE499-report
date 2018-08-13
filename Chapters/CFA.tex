@@ -1,6 +1,6 @@
 \chapter{\CFA} \label{CFA}
-Similar to \CC, C is a popular programming language especially in system
-programming. For example, Windows NT kernel and Linux kernel are written in C, and they are the foundation of many higher level
+Similar to \CC, C is a popular programming language especially in systems
+programming. For example, the Windows NT and Linux kernel are written in C, and they are the foundation of many higher level
 and popular projects. Therefore, it is unlikely that the programming language C is
 going to disappear any time soon.
 
@@ -10,18 +10,23 @@ irreversible legacy design choices, and newer versions of \CCS require significa
 
 To solve this problem, the programming language \CFAS is being created at the University of Waterloo. The goal
 of the language is to extend C with modern language features that many new
-languages have such as Rust, and Go. This extension provides a
+languages have such as Rust and Go. This extension provides a
 backward-compatible version of C, while fixing existing problems known in C and
 modernizing the language at the same time.
 
 \section{Overloading}
-Overloading is when a compiler permits a name to have multiple meanings. Most programming languages only allow operator and/or function overloading.
-In addition, \CFAS also supports variables and literal
-\verb|0/1| overloading.
+Overloading is when a compiler permits a name to have multiple meanings. All
+programming languages allow simple overloading of operators on basic types such
+as + sign on integer and floating point types. Most programming languages extend
+overloading of operators to user-defined types and/or general function
+overloading. \CFAS also supports overloading of variables and the literals \verb|0/1|.
 
 \subsection{Variable}
-Variables in the same block are allowed to have the same name, but different
-types. An assignment of a new variable to the same variable is inferred from its type.
+Variables in the same block are allowed to have the same name but different
+types.
+TODO: fixme
+An assignment to a new variable uses that variable type to infer the
+type of value the same variable is inferred from its type.
 
 
 \begin{lstlisting}[language=C++, caption={Overloading variables in \CFA}, label={CFA-overload-var}]
@@ -37,14 +42,13 @@ double s = MAX;         // s = DBL_MAX
 
 The listing \ref{CFA-overload-var} shows that when variable overloading exists
 in the same scope, the variable is selected based on the left side of
-initialization/assignment and operands of the rightside experession. For
+initialization/assignment and operands of the right side of the expression. For
 instance, the first assignment to variable \verb|s| at line 6, which is type short int,
 selects the MAX with the same type.
 
-\subsection{Routine}
-Routines in the same block can be overloaded depending on the number and type of
+\subsection{Function}
+Functions in the same block can be overloaded depending on the number and type of
 parameters and returns.
-
 
 \begin{lstlisting}[language=C++, caption={Overloading routines in \CFA},
 label={CFA-overload-func}]
@@ -59,11 +63,11 @@ char s = f('a');          // pick (3)
 [int, double] s = f();    // pick (4)
 \end{lstlisting}
 
-The listing \ref{CFA-overload-func} shows that when many routine are overloaded in
-the same scope, a routine is selected based on the combination of its return type and its
-arguments. For instance, from line 1-4, four different types of a routine called
-\verb|f| are declared. For the call \verb|f('a')|, the routine selected is the
-one on line 2, if the calls voids the result. However, if the call assigns to a
+The listing \ref{CFA-overload-func} shows that when many functions are overloaded in
+the same scope, a function is selected based on the combination of its return type and its
+arguments. For instance, from line 1-4, four different types of a function called
+\verb|f| are declared. For the call \verb|f('a')|, the function selected is the
+one on line 2, if the call voids the result. However, if the call assigns to a
 char, then the routine on line 3 is selected. This example can be seen on lines
 7-8.
 
@@ -94,4 +98,4 @@ a + b + c;
 
 The listing \ref{CFA-overload-ops} shows that operator overloading is permitted
 similar to \CC. However, the difference is that the operator name is
-denoted with \verb|?| instead.
+denoted with \verb|?| instead, and operator selection uses the return type.

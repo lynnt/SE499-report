@@ -13,7 +13,7 @@ and do more with the extensions.
 \section{Command usage}
 \subsection{\uCPPS source code example}
 \begin{lstlisting}[caption={\uCPPS source code used for GDB commands},
-label={uCPP-src-code}]
+label={uCPP-src-code}, basicstyle=\small]
 _Task T
 {
     void a()
@@ -82,22 +82,23 @@ its PID, its premption priority and spin, which is how long a processor
 repeatedly checks to see if a condition is true.
 
 \subsection{Listing all tasks in all clusters}
-\begin{lstlisting}[caption={\text{tasks} command}, label={tasks}]
+\begin{lstlisting}[caption={\text{tasks} command}, label={tasks},
+basicstyle=\small]
 (gdb) tasks
-            Cluster Name        Address
-            systemCluster       0x654200
-        ID      Task Name            Address         State
-        0       uProcessorTask      0x654200        uBaseTask::Blocked
-        1       uSystemTask         0x7c3280        uBaseTask::Blocked
-            Cluster Name        Address
-            userCluster         0x7c3280
-        ID      Task Name            Address         State
-        0       uProcessorTask      0x805e70        uBaseTask::Blocked
-        ...
-        6       T                   0x8c0d00        uBaseTask::Running
-        7       T                   0x8c1000        uBaseTask::Running
-        8       T                   0x8c1300        uBaseTask::Ready
-        ...
+        Cluster Name        Address
+        systemCluster       0x654200
+    ID      Task Name            Address         State
+    0       uProcessorTask      0x654200        uBaseTask::Blocked
+    1       uSystemTask         0x7c3280        uBaseTask::Blocked
+        Cluster Name        Address
+        userCluster         0x7c3280
+    ID      Task Name            Address         State
+    0       uProcessorTask      0x805e70        uBaseTask::Blocked
+    ...
+    6       T                   0x8c0d00        uBaseTask::Running
+    7       T                   0x8c1000        uBaseTask::Running
+    8       T                   0x8c1300        uBaseTask::Ready
+    ...
 \end{lstlisting}
 In the listing \ref{tasks}, the command \verb|tasks| does not require any
 arugment since it lists out all the known tasks in a \uCPPS program at this
