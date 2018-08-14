@@ -39,6 +39,16 @@ source language, is adding the instance of type \verb|struct language_def| into
 the list of language definitions, which can be found in
 \verb|gdb/language.h|.
 
+\begin{lstlisting}[language=C++, caption={}, label={}]
+(gdb) thread 2
+[Switching to thread 2 (Thread 0x802080 (LWP 1577))]
+#0  T::a (this=0xc0b0b0) at utils.cpp:8
+8               while (1);
+(gdb) i locals
+local_int = 3
+local_str = "example"
+\end{lstlisting}
+
 The next step is updating the DWARF reader, so the reader can translate the DWARF code to an enum value defined
 above. However, this assumes that the language has an assigned language code.
 The language code is a hexadecimal literal value assigned to a particular

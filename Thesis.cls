@@ -132,6 +132,7 @@
         basicstyle=\scriptsize\ttfamily,
         showstringspaces=false,
         keepspaces=true}
+\lstset{escapeinside={<@}{@>}}
 \lstdefinestyle{matlab} {
         language=Matlab,
         keywordstyle=\color{blue},
