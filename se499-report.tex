@@ -17,7 +17,7 @@
 \geometry{
       letterpaper,
         left=1.5in,top=1in,right=1.0in,bottom=1in,
-          headheight=20pt,headsep=0.25in,foot=9pt,footsep=0.3in,
+          headheight=20pt,headsep=0.25in,foot=9pt,
             includeheadfoot
 }
 %% ----------------------------------------------------------------
@@ -47,40 +47,6 @@
 
 \pagestyle{fancy}  % Finally, use the "fancy" page style to implement the FancyHdr headers
 
-%% ----------------------------------------------------------------
-% Declaration Page required for the Thesis, your institution may give you a different text to place here
-\iffalse
-\Declaration{
-
-\addtocontents{toc}{\vspace{1em}}  % Add a gap in the Contents, for aesthetics
-\end{itemize}
- 
- 
-Signed:\\
-\rule[1em]{25em}{0.5pt}  % This prints a line for the signature
- 
-Date:\\
-\rule[1em]{25em}{0.5pt}  % This prints a line to write the date
-}
-\clearpage  % Declaration ended, now start a new page
-\fi
-
-%% ----------------------------------------------------------------
-% The "Funny Quote Page"
-\iffalse
-\pagestyle{empty}  % No headers or footers for the following pages
-
-\null\vfill
-% Now comes the "Funny Quote", written in italics
-\textit{``Write a funny quote here.''}
-
-\begin{flushright}
-If the quote is taken from someone, their name goes here
-\end{flushright}
-
-\vfill\vfill\vfill\vfill\vfill\vfill\null
-\clearpage  % Funny Quote page ended, start a new page
-\fi
 %% ----------------------------------------------------------------
 % The Abstract Page
 \addtotoc{Preface}  % Add the "Abstract" page entry to the Contents
@@ -151,22 +117,6 @@ background knowledge and examples.
 
 %% ----------------------------------------------------------------
 \clearpage  % Start a new page
-\iffalse
-%\lhead{\emph{Physical Constants}}  % Set the left side page header to "Physical Constants"
-%\listofconstants{lrcl}  % Include a list of Physical Constants (a four column table)
-{
-% Constant Name & Symbol & = & Constant Value (with units) \\
-
-}
-
-%% ----------------------------------------------------------------
-\clearpage  %Start a new page
-\lhead{\emph{Symbols}}  % Set the left side page header to "Symbols"
-\listofnomenclature{lll}  % Include a list of Symbols (a three column table)
-{
-% symbol & name & unit \\
-}
-\fi
 %% ----------------------------------------------------------------
 % End of the pre-able, contents and lists of things
 % Begin the Dedication page

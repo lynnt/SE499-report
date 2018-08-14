@@ -144,7 +144,8 @@
 \pdfstringdefDisableCommands{
    \let\\\space
 }
-\lstset{language=C++,
+\lstdefinestyle{c++} {
+        language=C++,
         basicstyle=\ttfamily,
         numbers=left,
         stepnumber=1,
@@ -154,7 +155,8 @@
         commentstyle=\color{ForestGreen}\ttfamily,
         morecomment=[l][\color{magneta}]{\#}
 }
-\lstset{language=Python,
+\lstdefinestyle{Python} {
+        language=Python,
         basicstyle=\ttfamily,
         numbers=left,
         stepnumber=1,

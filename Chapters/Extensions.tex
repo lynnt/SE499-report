@@ -1,164 +1,201 @@
 \chapter{Extending GDB for \uCPP}
+When a concurrent program deadlocks, looking at the task call-stack can locate
+the resource and the blocking cycle that resulted in the deadlock. Therefore,
+a reason for having a task tour is to display the call-stack of each task to
+know where it is executing and what values it is currently computing. This leads
+to the development of extending GDB.
+
 \section{Design Constraints}
 As mentioned in Chapter \ref{GDB}, there are several ways to extend GDB. However,
-there are a few design constraints on the selected mechanism. Extension
-mechanism for \uCPPS is simple, easy to implement, and versatile.
-
-Regardless of which mechanism selected for extending GDB, all the functions
+there are a few design constraints on the selected mechanism. All the functions
 implemented should maintain similar functionality to existing GDB commands. In addition to functional
-requirements, user usability and flexibility are additional requirements for this
+requirements, usability and flexibility are additional requirements for this
 project. These final requirements enable developers to be productive quickly
-and do more with the extensions.
+and do more with the extensions. The extensions created for \uCPPS are simple
+to use and versatile.
 
-\section{Command usage}
+\section{Existing User-defined GDB Commands}
 \subsection{\uCPPS source code example}
+Listing \ref{uCPP-src-code} shows a \uCPPS program that implicitly creates two
+clusters, system and user, explicitly creates three processors plus one
+implicit for system and user cluster. Additionally, the program explicitly creates ten tasks on the
+user cluster, plus the implicit system and processor tasks on the system cluster, and
+processor tasks on the user cluster.
+
 \begin{lstlisting}[caption={\uCPPS source code used for GDB commands},
 label={uCPP-src-code}, basicstyle=\small]
 _Task T
 {
-    void a()
+    string name;
+
+    void a(int param)
     {
         while (1);
     }
 
     void main()
     {
-        a();
+        a(5);
     }
     public:
-        T() {}
-        T(const char* taskName, uCluster& x) : uBaseTask(taskName)
+        T(const int tid)
         {
-            setName(taskName);
+            name = "T" + std::to_string(tid);
+            setName(tid.c_str());
         }
 };
 
 int main()
 {
+    // set the number of processors
     uProcessor procs[3];
     const int numTasks = 10;
-    T tasks[numTasks];
+    T* tasks[numTasks];
+
+    // initialize tasks T
+    for (int id = 0; id < numTasks; id += 1)
+    {
+        tasks[i] = new T(id);
+    }
+
+    // clean up all tasks
+    for (int id = 0; id < numTasks; id += 1)
+    {
+        delete tasks[i];
+    }
 }
 \end{lstlisting}
-Listing \ref{uCPP-src-code} shows the \uCPPS source code used to demonstrate
-how existing GDB commands, which are specifcally for \uCPPS, work.
+
 \subsection{Listing all clusters in a \uCPPS program}
 \begin{lstlisting}[caption={clusters command}, label={clusters-command}]
 (gdb) clusters
         Name            Address
-    systemCluster       0x654200
-    userCluster         0x7c3280
+    systemCluster       0x655280
+    userCluster         0x7c4280
 \end{lstlisting}
-Listing \ref{clusters-command} shows a list of all clusters available in the system
-along with the associated address.
-
-\subsection{Listing all tasks in a cluster}
-\begin{lstlisting}[caption={\text{cluster\_tasks} command}, label={cluster-tasks}]
-(gdb) cluster_tasks 0x654200
-    ID          Name            Address         State
-    0       uProcessorTask      0x654200        uBaseTask::Blocked
-    1       uSystemTask         0x7c3280        uBaseTask::Blocked
-\end{lstlisting}
-In listing \ref{cluster-tasks}, the command \verb|cluster_tasks| requires one
-argument that is an address of a cluster. In this exampple, this command lists
-all the name of the tasks in a cluster called \verb|systemCluster|.
-Additionally, \verb|cluster_tasks| command also provides the associated address
-for each task and its state.
+Listing \ref{clusters-command} shows a list of all clusters available in the
+program
+along with their associated address.
 
 \subsection{Listing all processors in a cluster}
 \begin{lstlisting}[caption={\text{cluster\_procs} command}, label={cluster-procs}]
-(gdb) cluster_procs 0x7c3280
+(gdb) processors userCluster
     Address    PID         Preemption      Spin
-    0x7c5bf0    8c92832     10              1000
-    0x8c2b50    9449600     10              1000
-    0x8c2d10    9973888     10              1000
-    0x8c2ed0    10502272    10              1000
+    0x7c6bf0    8396928     10              1000
+    0x8c3b60    9453696     10              1000
+    0x8c3d20    9977984     10              1000
+    0x8c3ee0    10506368    10              1000
 \end{lstlisting}
-In the listing \ref{cluster-procs}, the command \verb|cluster_procs| expects one
-argument, which is similar to command \verb|cluster_tasks|. This command shows
+In listing \ref{cluster-procs}, the command \verb|processors| expects one
+argument. This command shows
 all the processors in a cluster. In particular, this example shows that there
-are four processors in the cluster called \verb|userCluster|, and an address,
-its PID, its premption priority and spin, which is how long a processor
-repeatedly checks to see if a condition is true.
+are four processors in \verb|userCluster|, where each has an address,
+its PID, its premption priority and spin, which is how many times a processor
+checks its associated cluster's ready queue for an available task to execute
+before the processor blocks.
 
 \subsection{Listing all tasks in all clusters}
 \begin{lstlisting}[caption={\text{tasks} command}, label={tasks},
 basicstyle=\small]
-(gdb) tasks
+(gdb) task
         Cluster Name        Address
-        systemCluster       0x654200
+        systemCluster       0x655280
     ID      Task Name            Address         State
-    0       uProcessorTask      0x654200        uBaseTask::Blocked
-    1       uSystemTask         0x7c3280        uBaseTask::Blocked
+    0       uProcessorTask      0x6c39b0        uBaseTask::Blocked
+    1       uSystemTask         0x783ef0        uBaseTask::Blocked
         Cluster Name        Address
-        userCluster         0x7c3280
+        userCluster         0x7c4280
     ID      Task Name            Address         State
-    0       uProcessorTask      0x805e70        uBaseTask::Blocked
+    0       uProcessorTask      0x806e70        uBaseTask::Blocked
     ...
-    6       T                   0x8c0d00        uBaseTask::Running
-    7       T                   0x8c1000        uBaseTask::Running
-    8       T                   0x8c1300        uBaseTask::Ready
+    6       T0                  0xa49830        uBaseTask::Running
+    7       T1                  0xa89bb0        uBaseTask::Ready
+    8       T2                  0xac9f30        uBaseTask::Ready
     ...
+    15      T9                  0xc8b7b0        uBaseTask::Ready
 \end{lstlisting}
-In the listing \ref{tasks}, the command \verb|tasks| does not require any
+In listing \ref{tasks}, the command \verb|task| does not require any
 arugment since it lists out all the known tasks in a \uCPPS program at this
 point of the snapshot of the execution.
 
+\subsection{Listing all tasks in a cluster}
+\begin{lstlisting}[caption={\text{cluster\_tasks} command}, label={cluster-tasks}]
+(gdb) task systemCluster
+    ID          Name            Address         State
+    0       uProcessorTask      0x654200        uBaseTask::Blocked
+    1       uSystemTask         0x7c3280        uBaseTask::Blocked
+\end{lstlisting}
+In listing \ref{cluster-tasks}, the command \verb|task| requires one argument
+that is the name of a cluster. In this example, this command lists
+all the name of the tasks in a cluster called \verb|systemCluster|.
+Additionally, this version of the command \verb|task| also provides the associated address
+for each task and its state.
+
 \section{Design Implementation}
-The GDB Python API satifies all the given criteria above after examining of different solutions. In particular, GDB provides an extensive API for
+The GDB Python API satifies all the given criteria above, after examining the different solutions. In particular, GDB provides an extensive API for
 the programming language Python compared to other solutions. Furthermore, Python is a scripting language with built-in
 data structures and functions that enables the development of more complex
-operations and saves time on project development.
+operations and saves time on development.
 
-The first extension for GDB is writing new commands that allow
-users to switch from one \uCCS task to another. Two switching approaches are
+The next extension for displaying information is writing new commands that allow
+stepping from one \uCCS task to another. Two switching approaches are
 provided: structured and free form. The structured form remembers the task tour in a
-LIFO way, meanwhile, the free form does not remember the task tour. This means
-at least two commands are needed for the structured form and one is needed for
-the free form. The first core command is for switching from the current task to
-a new task that can be called \verb|pushtask|, and another command
-is for switching back to the previous task, from which the current task comes, and this command is named \verb|poptask|.
+LIFO way, while the free form does not remember the task tour. This semantics means
+at least two commands are needed for the structured form and the free form.
+Taking the idea of overloading in programming languages, the structured
+commands for switching from the current task to a different task overload the
+command \verb|task| with two  arguments, and
+for switching back to the previous task is \verb|poptask|.
 
-Prior to implementing either \verb|pushtask| or \verb|poptask| command, the
-task argument had to be resolved. Should the \verb|pushtask| command use a task's address or the index of a cluster, and the index of a task with respect
-to that cluster? Another issue needs to be resolved is if the structured or free
-form approach should be selected.
+Prior to executing the overloaded \verb|task| or \verb|poptask| stepping, the
+task argument has to be resolved. There are two ways to designate a task: its
+absolute address or relative id within a cluster. For instance, to switch from
+any task to task \verb|T1| seen in listing \ref{tasks}, \verb|task 0xa89bb0| can use an absolute address (0xa89bb0), or \verb|task userCluster 7| can use the relative id (7) with respect to userCluster.
 
 As a result, both the structured and free form approaches are supported, which
-adds higher degree of freedom to users. Furthermore, there are two variations of the \verb|pushtask| command to provide both usability and flexibility. The first variation is called \verb|pushtask| and requires
-only one argument, which is the address of the task a user wants to switch to.
-This option provides users with more flexibility if they know a
-particular address they want to switch to. Listing \ref{pushtask} shows an example
-of usage.
+adds higher degree of freedom to users. Core functionality of these approaches
+is essentially the same. To implement the task tour, it is necessary
+to store the context information for every context switching. This means that
+the \verb|task| function in listing \ref{pushtask} needs to perform action to
+store this information every time it is invoked.
 
-The second variation is called \verb|pushtask_id| and requires both the index of
-the cluster and the index of the task to switch to. Core functionality of these two commands is
-essentially the same. The only difference is that the \verb|pushtask_id| command
-needs to iterate through the data structure that stores all the clusters to find
-the right cluster based on its index, and using the found instance of the
-cluster to search for the instance of the expected task. Furthermore, a decision
-is made to store the context information for every context switching, this means
-that \verb|pushtask| command needs to perform actions to store this information every time it is
-invoked. Listing \ref{pushtask-id} shows an example of usage.
+In listing \ref{pushtask-code}, each task points to a \verb|uContext_t| data
+structure, which stores the context
+information such as stack pointer, frame pointer. These pointers are then
+stored in an instance of the named tuple \verb|stackInfo| for every level of
+redirection. The tuple also stores information about the program counter that
+is calculated from the address of the \verb|uSwitch| Assembly routine because a task always ends up in \verb|uSwitch| when its state is blocked. Similarly, the command
+also retrieves these context information but from the task that a user wants to switch to, and
+sets the equivalent registers to the new values. In particular, the value of the stack
+pointer is set in \verb|rsp| register, the value of the frame pointer is set in \verb|rbp|
+register, and finally the value of the program counter is set in \verb|pc| register.
+For every new function call, a new stack frame is created and the values of all
+the registers are changed for that frame. Therefore, in
+order to see the true value of hardware registers, innermost frame that is
+frame-0 must be selected \cite{reference11}. However, it is possible to not be in frame-0, so prior to setting these values,
+the command must switch back to the innermost (currently executing) frame first.
 
 \begin{lstlisting}[language=Python, caption={Abridged \text{push\_task} source
-code},
-label={pushtask-code}]
+code}, label={pushtask-code}, fontstyle=\small]
 # get GDB type of uContext_t*
-uContext_t_ptr_type = \
-gdb.lookup_type('UPP::uMachContext::uContext_t').pointer
+uContext_t_ptr_type = gdb.lookup_type('UPP::uMachContext::uContext_t').pointer
 
 # retrieve the context object from a task
+# and cast it to the type uContext_t*
 task_context = task['context'].cast(uContext_t_ptr_type)
 
+# the offset where sp would be starting from uSwitch function
+sp_address_offset = 48
 # lookup the value of stack pointer (sp), frame pointer (fp),
 # program counter (pc)
-xsp = task_context['SP'] + 48
+xsp = task_context['SP'] + sp_address_offset
 xfp = task_context['FP']
 if not gdb.lookup_symbol('uSwitch'):
     print('uSwitch symbol is not available')
     return
 
+# This value is calculated here beacuse we always here when the task is in
+blocked state
 xpc = get_addr(gdb.parse_and_eval('uSwitch').address + 28, 'PC')
 # must switch back to frame-0 to set 'pc' register with
 # the value of xpc
@@ -178,23 +215,7 @@ gdb.execute('set $rbp={}'.format(xfp))
 gdb.execute('set $pc={}'.format(xpc))
 \end{lstlisting}
 
-In listing \ref{pushtask-code}, each task has a copy of \verb|uContext_t|, which stores the context
-information such as stack pointer, frame pointer. These pointers are then
-stored in an instance of the named tuple \verb|stackInfo| for every level of
-redirection. The tuple also stores information about the program counter that
-is calculated from the address of the \verb|uSwitch| Assembly routine. Similarly, the command
-also retrieves these context information but from the task that a user wants to switch to, and
-sets the equivalent registers to the new values. In particular, the value of the stack
-pointer is set in \verb|rsp| register, the value of the frame pointer is set in \verb|rbp|
-register, and finally the value of the program counter is set in \verb|pc| register.
-For every new function call, a new stack frame is created and the values of all
-the registers are changed for that frame. Therefore, in
-order to see the true value of hardware registers, innermost frame that is
-frame-0 must be selected \cite{reference11}. However, it is possible to not be in frame-0, so prior to setting these values,
-the command must switch back to the innermost (currently executing) frame first.
-
-Finally, the implementation of \verb|poptask| is more straightforward and does
-not require different variations of the command. This command goes back to the previous task, however, this may not be the original
+Finally, the implementation of \verb|poptask| is more straightforward. This command goes back to the previous task, however, this may not be the original
 task that initiates the task switching process. If the current context is
 already in the starting task, the command does nothing. Otherwise,
 \verb|poptask| command first switches back to the innermost frame, and then
@@ -211,21 +232,95 @@ the program's context is automatically switched back to the context of the task
 that initiates the first
 context switch.
 \begin{lstlisting}[caption={\text{pushtask} command}, label={pushtask}]
-(gdb) pushtask 0x8c1300
+(gdb) task 0xac9f30
 \end{lstlisting}
 
-\begin{lstlisting}[caption={\text{pushtask\_id} command}, label={pushtask-id}]
-(gdb) pushtask_id 1
+\begin{lstlisting}[caption={Context switch version of task command}, label={pushtask-id}]
+(gdb) bt
+#0  0x00007ffff6d79826 in __GI___sigsuspend (set=set@entry=0x73f850)
+    at ../sysdeps/unix/sysv/linux/sigsuspend.c:30
+#1  0x000000000042f2ef in uCluster::processorPause (
+    this=0x655280 <uKernelModule::systemClusterStorage>)
+    at /usr/local/u++-7.0.0/src/kernel/uCluster.cc:120
+#2  0x000000000041b5f1 in UPP::uProcessorKernel::main (this=0x703db0)
+    at /usr/local/u++-7.0.0/src/kernel/uProcessor.cc:678
+#3  0x00000000004257d6 in UPP::uMachContext::invokeCoroutine (This=...)
+    at /usr/local/u++-7.0.0/src/kernel/uMachContext.cc:89
+#4  0x0000000000000000 in ?? ()
+(gdb) task userCluster 7
+(gdb) bt
+#0  uSwitch () at /usr/local/u++-7.0.0/src/kernel/uSwitch-x86_64.S:64
+#1  0x00000000004287dc in uBaseCoroutine::taskCxtSw (this=0x8c3ef8)
+    at /usr/local/u++-7.0.0/src/kernel/uBaseCoroutine.cc:146
+#2  0x000000000042cd3e in UPP::uProcessorKernel::scheduleInternal (this=<optimized out>,
+    task=<optimized out>) at /usr/local/u++-7.0.0/src/kernel/uProcessor.cc:291
+#3  0x0000000000429f76 in uBaseTask::uYieldInvoluntary (this=<optimized out>)
+    at /usr/local/u++-7.0.0/src/kernel/uBaseTask.cc:361
+#4  0x000000000041e4e4 in uKernelModule::rollForward (inKernel=inKernel@entry=false)
+    at /usr/local/u++-7.0.0/src/kernel/uC++.cc:1111
+#5  0x000000000042bfc3 in UPP::uSigHandlerModule::sigAlrmHandler (sig=<optimized out>,
+    sfp=<optimized out>, cxt=0xac5380) at /usr/local/u++-7.0.0/src/kernel/uSignal.cc:308
+#6  <signal handler called>
+#7  T::a (this=0xa89bb0) at utils.cpp:7
+#8  0x000000000041ca60 in T::main (this=0xa89bb0) at utils.cpp:10
+#9  0x0000000000425aac in UPP::uMachContext::invokeTask (This=...)
+    at /usr/local/u++-7.0.0/src/kernel/uMachContext.cc:140
+#10 0x0000000000000000 in ?? ()
 \end{lstlisting}
 
 \begin{lstlisting}[caption={\text{poptask} command}, label={poptask}]
+(gdb) bt
+#0  0x00007ffff6d79826 in __GI___sigsuspend (set=set@entry=0x73f850)
+    at ../sysdeps/unix/sysv/linux/sigsuspend.c:30
+#1  0x000000000042f2ef in uCluster::processorPause (
+    this=0x655280 <uKernelModule::systemClusterStorage>)
+    at /usr/local/u++-7.0.0/src/kernel/uCluster.cc:120
+#2  0x000000000041b5f1 in UPP::uProcessorKernel::main (this=0x703db0)
+    at /usr/local/u++-7.0.0/src/kernel/uProcessor.cc:678
+#3  0x00000000004257d6 in UPP::uMachContext::invokeCoroutine (This=...)
+    at /usr/local/u++-7.0.0/src/kernel/uMachContext.cc:89
+#4  0x0000000000000000 in ?? ()
+....
+(After context switched to task 7 in userCluster)
+(gdb) bt
+#0  uSwitch () at /usr/local/u++-7.0.0/src/kernel/uSwitch-x86_64.S:64
+#1  0x00000000004287dc in uBaseCoroutine::taskCxtSw (this=0x8c3ef8)
+    at /usr/local/u++-7.0.0/src/kernel/uBaseCoroutine.cc:146
+#2  0x000000000042cd3e in UPP::uProcessorKernel::scheduleInternal (this=<optimized out>,
+    task=<optimized out>) at /usr/local/u++-7.0.0/src/kernel/uProcessor.cc:291
+#3  0x0000000000429f76 in uBaseTask::uYieldInvoluntary (this=<optimized out>)
+    at /usr/local/u++-7.0.0/src/kernel/uBaseTask.cc:361
+#4  0x000000000041e4e4 in uKernelModule::rollForward (inKernel=inKernel@entry=false)
+    at /usr/local/u++-7.0.0/src/kernel/uC++.cc:1111
+#5  0x000000000042bfc3 in UPP::uSigHandlerModule::sigAlrmHandler (sig=<optimized out>,
+    sfp=<optimized out>, cxt=0xac5380) at /usr/local/u++-7.0.0/src/kernel/uSignal.cc:308
+#6  <signal handler called>
+#7  T::a (this=0xa89bb0) at utils.cpp:7
+#8  0x000000000041ca60 in T::main (this=0xa89bb0) at utils.cpp:10
+#9  0x0000000000425aac in UPP::uMachContext::invokeTask (This=...)
+    at /usr/local/u++-7.0.0/src/kernel/uMachContext.cc:140
+#10 0x0000000000000000 in ?? ()
 (gdb) poptask
+#1  0x000000000042f2ef in uCluster::processorPause (this=0x73f7a8)
+    at /usr/local/u++-7.0.0/src/kernel/uCluster.cc:120
+120     /usr/local/u++-7.0.0/src/kernel/uCluster.cc: No such file or directory.
+(gdb) bt
+#0  0x00007ffff6d79826 in __GI___sigsuspend (set=set@entry=0x73f850)
+    at ../sysdeps/unix/sysv/linux/sigsuspend.c:30
+#1  0x000000000042f2ef in uCluster::processorPause (this=0x73f7a8)
+    at /usr/local/u++-7.0.0/src/kernel/uCluster.cc:120
+#2  0x000000000041b5f1 in UPP::uProcessorKernel::main (this=0x703db0)
+    at /usr/local/u++-7.0.0/src/kernel/uProcessor.cc:678
+#3  0x00000000004257d6 in UPP::uMachContext::invokeCoroutine (This=...)
+    at /usr/local/u++-7.0.0/src/kernel/uMachContext.cc:89
+#4  0x0000000000000000 in ?? ()
 \end{lstlisting}
 
 \section{Result}
-The current implementation successfully allows users to perform context
-switching among tasks as long as the destination task is not a terminated
-task. Additionally, users are allowed to continue the execution where the
+The current implementation successfully allows users to display snapshot of the
+current execution with respect to clusters, processors, and tasks. With this
+information it is possible to tour the call stacks of the tasks to see execution
+locations and data values. Additionally, users are allowed to continue the execution where the
 program last pauses assuming that the program has not crashed. The continuation
 of execution can be done automatically by the extensions by running any already
 existing GDB commands such as \verb|continue| or a user can manually

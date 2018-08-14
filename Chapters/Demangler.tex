@@ -3,10 +3,11 @@
 \section{Design Constraints}
 While \CFAS is a translator for additional features that C does not support, all
 the code during the compilation phase is eventually compiled down to C code.
-The resulting executable file marks the DWARF tag \verb|DW_AT_language| with a
-fixed hexadecimal value of the C language. Because it is possible to have one frame is in C code and another
-frame in Assembly code, GDB encodes a language flag for each frame. This
-results into a constraint in implementing the demangler. The first requirement is
+The resulting executable file marks the DWARF tag \verb|DW_AT_language| with the
+fixed hexadecimal value for the C language. Because it is possible to have one frame in C code and another
+frame in Assembly code, GDB encodes a language flag for each frame. \CFAS adds
+to this list, as it is essential to know when a stack frame contains mangled
+names C and assembler unmangled names. Thus, the first requirement is
 making GDB understands \CFAS as a source language.
 
 Next, there is a DWARF reader component in GDB since most GDB targets use the DWARF
@@ -20,17 +21,17 @@ recognize \CFA.
 Additionally, when a user enters a name into GDB, GDB needs to lookup if the
 name exists in the program. However, different languages may have different
 hierarchical structure for dynamic scope, so an implementation for nonlocal
-symbol lookup is required to aid GDB.
+symbol lookup is required.
 
 \section{Design Implementation}
 Most of the implementation work discussed below is from reading GDB's internals
 wiki page and understanding how other languages are supported in GDB \cite{reference5}.
 
-A new entry is added to GDB's list of definition for languages it supports in
+A new entry is added to GDB's list of language definition in
 \verb|gdb/defs.h|. Hence, a new instance of type \verb|struct language_def|
-should be created to add a language definition of \CFAS. This instance is the
+must be created to add a language definition of \CFAS. This instance is the
 entry point for new functions that are only applicable to \CFA. These new
-defined functions are invoked by GDB at runtime if there are operations that
+functions are invoked by GDB during debugging if there are operations that
 are applicable specifically to \CFA. For instance, \CFAS can implement its
 own symbol lookup function for non-local variables because \CFAS can have a
 different scope hierarchy. The final step for registering \CFAS in GDB, as a new
@@ -41,13 +42,13 @@ the list of language definitions, which can be found in
 The next step is updating the DWARF reader, so the reader can translate the DWARF code to an enum value defined
 above. However, this assumes that the language has an assigned language code.
 The language code is a hexadecimal literal value assigned to a particular
-language, which is maintained by GCC. For \CFA, a hexidecimal value
-\verb|0x0025| is added to \verb|include/dwarf2.h|.
+language, which is maintained by GCC. For \CFA, the hexidecimal value
+\verb|0x0025| is added to \verb|include/dwarf2.h| to denote \CFA.
 
 Finally, the demangler implementation goes into the \verb|libiberty| directory along with
 other demanglers. The demangler can be called by updating the language
 definition defined above with the entry point of the \CFAS demangler.
-In addition to the demangler, GDB provides users with an option
+In addition to the demangler, GDB provides an option
 to manually set which demangler style to use in the command line interface.
 This option can be turned on for \CFAS in GDB by adding a new enum value for \CFAS in
 the list of demangling styles along with setting the appropriate mask for this

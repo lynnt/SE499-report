@@ -1,4 +1,6 @@
 filename="se499-report"
+cont:
+	latexmk -pvc -pdf ${filename}.tex
 all:
 	pdflatex ${filename}.tex
 	bibtex ${filename}
@@ -10,3 +12,5 @@ spellcheck:
 	aspell -t -c ${filename}.tex
 compile:
 	aspell -t -c ${filename}.tex && latexmk -pvc -pdf ${filename}.tex
+clean:
+	rm -f ${filename}.{ps,pdf,log,aux,out,dvi,bbl,blg}
