@@ -13,7 +13,7 @@ Specifically, this report talks about how to add GNU Debugger (GDB) support for 
 programming languages \uCPPS and \CFA.
 For \CFA, new hooks are also added to allow GDB to understand that
 \CFAS is a new source language that requires invocation of a demangler for
-variable and routine names.
+variable and function names.
 
 Because \uCPPS is a translator, all the code written in \uCPPS is eventually
 compiled down to \CCS code. This transformation gives \uCPPS an advantage with
@@ -23,7 +23,7 @@ these objects or the runtime environment. One objective of this
 project is to write new GDB extensions to understand concurrency among tasks, a new high-level execution construct that is discussed more in Chapter \ref{uCPP}.
 
 Additionally, if a programming language provides overloading functionality,
-which allowing routines or variables in the same scope with the
+which is allowing functions or variables in the same scope with the
 same identifier, then each of these entities must be assigned a unique name, otherwise,
 there are name collisions.
 Name mangling is a technique used in compilers to resolve this

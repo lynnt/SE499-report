@@ -6,7 +6,7 @@ going to disappear any time soon.
 
 However, C has inherent problems in syntax, semantics and many
 more \cite{reference2}. Even though \CCS is meant to fix these problems, \CCS has many
-irreversible legacy design choices, and newer versions of \CCS require significantly more effort to convert C-based projects into \CCS.
+irreversible legacy design choices, and newer versions of \CCS require significantly more effort to convert C-based projects into \CC.
 
 To solve this problem, the programming language \CFAS is being created at the University of Waterloo. The goal
 of the language is to extend C with modern language features that many new
@@ -24,8 +24,7 @@ overloading. \CFAS also supports overloading of variables and the literals \verb
 \subsection{Variable}
 Variables in the same block are allowed to have the same name but different
 types. An assignment to a new variable uses that variable's type to infer the
-required type, and that type is used eto select a variable containing a variable
-containing the approriate type.
+required type, and that type is used to select a variable containing the approriate type.
 
 \begin{lstlisting}[style=C++nokeyword, caption={Overloading variables in \CFA}, label={CFA-overload-var}]
 short int MAX = SHRT_MAX;

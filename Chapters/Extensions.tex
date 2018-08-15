@@ -1,5 +1,5 @@
 \chapter{Extending GDB for \uCPP}
-When a concurrent program deadlocks, looking at the task call-stack can locate
+When a concurrent program deadlocks, looking at the task's call stack can locate
 the resource and the blocking cycle that resulted in the deadlock. Therefore,
 a reason for having a task tour is to display the call stack of each task to
 know where it is executing and what values it is currently computing. This leads
@@ -10,14 +10,17 @@ listing \ref{uCPP-src-code}, all information shown in listing
 \begin{lstlisting}[caption={Call stack of function \textbf{a()} in the \uCPPS
 program from listing \ref{uCPP-src-code}}, label={uCPP-callstack}]
 (gdb) i locals
-local_int = 3
-local_str = "example"
+x = 3
+y = "example"
 (gdb) bt
-#0  T::a (this=0xc0b0b0) at utils.cpp:8
-#1  0x000000000041cb43 in T::main (this=0xc0b0b0) at utils.cpp:11
+#0  T::a (this=0xb0a2b0, param=5) at utils.cpp:8
+#1  0x000000000041cb4c in T::main (this=0xb0a2b0) at utils.cpp:11
 #2  0x0000000000425bbc in UPP::uMachContext::invokeTask (This=...)
     at /usr/local/u++-7.0.0/src/kernel/uMachContext.cc:140
 #3  0x0000000000000000 in ?? ()
+(gdb) i args
+this = 0xb0a2b0
+param = 5
 \end{lstlisting}
 \section{Design Constraints}
 As mentioned in Chapter \ref{GDB}, there are several ways to extend GDB. However,
@@ -31,21 +34,21 @@ to use and versatile.
 \section{Existing User-defined GDB Commands}
 \subsection{\uCPPS source code example}
 Listing \ref{uCPP-src-code} shows a \uCPPS program that implicitly creates two
-clusters, system and user, explicitly creates three processors plus one
-implicit for system and user cluster. Additionally, the program explicitly creates ten tasks on the
-user cluster, plus the implicit system and processor task (uProcessorTask) on the system cluster, and
-processor task (uProcessorTask) on the user cluster.
+clusters, system and user, and explicitly creates three processors plus one
+implicit for system and user cluster. Additionally, the program explicitly
+creates ten tasks on the user cluster, plus one implicit system and a processor task (uProcessorTask) on the system cluster, and
+a processor task (uProcessorTask) on the user cluster.
 
 \begin{lstlisting}[style=C++, caption={\uCPPS source code used for GDB commands},
 label={uCPP-src-code}, basicstyle=\small]
 _Task T
 {
-    string name;
+    std::string name;
 
     void a(int param)
     {
-        int local_int = 3;
-        std::string local_str = "example";
+        int x = 3;
+        std::string y = "example";
         while (1);
     }
 
@@ -68,7 +71,7 @@ int main()
     const int numTasks = 10;
     T* tasks[numTasks];
 
-    // initialize tasks T
+    // initialize all tasks T
     for (int id = 0; id < numTasks; id += 1)
     {
         tasks[i] = new T(id);
@@ -94,7 +97,7 @@ program
 along with their associated address.
 
 \subsection{Listing all processors in a cluster}
-\begin{lstlisting}[caption={\text{cluster\_procs} command}, label={cluster-procs}]
+\begin{lstlisting}[caption={processors command}, label={cluster-procs}]
 (gdb) processors userCluster
     Address    PID         Preemption      Spin
     0x7c6bf0    8396928     10              1000
@@ -111,7 +114,8 @@ checks its associated cluster's ready queue for an available task to execute
 before the processor blocks.
 
 \subsection{Listing all tasks in all clusters}
-\begin{lstlisting}[caption={\text{tasks} command}, label={tasks},
+\begin{lstlisting}[caption={task command for displaying all tasks for all
+clusters}, label={tasks},
 basicstyle=\small]
 (gdb) task
         Cluster Name        Address
@@ -135,7 +139,7 @@ arugment since it lists out all the known tasks in a \uCPPS program at this
 point of the snapshot of the execution.
 
 \subsection{Listing all tasks in a cluster}
-\begin{lstlisting}[caption={\text{cluster\_tasks} command}, label={cluster-tasks}]
+\begin{lstlisting}[caption={task command for displaying all tasks in a cluster}, label={cluster-tasks}]
 (gdb) task systemCluster
     ID          Name            Address         State
     0       uProcessorTask      0x654200        uBaseTask::Blocked
@@ -161,12 +165,19 @@ at least two commands are needed for the structured form and the free form.
 Taking the idea of overloading in programming languages, the structured
 commands for switching from the current task to a different task overload the
 command \verb|task| with two  arguments, and
-for switching back to the previous task is \verb|poptask|.
+for switching back to the previous task is a new command \verb|poptask|.
 
 Prior to executing the overloaded \verb|task| or \verb|poptask| stepping, the
 task argument has to be resolved. There are two ways to designate a task: its
 absolute address or relative id within a cluster. For instance, to switch from
-any task to task \verb|T1| seen in listing \ref{tasks}, \verb|task 0xa89bb0| can use an absolute address (0xa89bb0), or \verb|task userCluster 6| can use the relative id (6) with respect to userCluster.
+any task to task \verb|T1| seen in listing \ref{tasks}, the command on line 1
+in listing \ref{task-addr-option} uses an absolute address (0xa49830), or the
+command on line 2 uses the relative id (6) with respect to userCluster.
+
+\begin{lstlisting}[caption={task command option}, label={task-addr-option}]
+task 0xa49830
+task userCluster 6
+\end{lstlisting}
 
 As a result, both the structured and free form approaches are supported, which
 adds higher degree of freedom to users. Core functionality of these approaches
@@ -178,9 +189,9 @@ store this information every time it is invoked.
 In listing \ref{pushtask-code}, each task points to a \verb|uContext_t| data
 structure, which stores the context
 information such as stack pointer, frame pointer. These pointers are then
-stored in an instance of the named tuple \verb|stackInfo| for every level of
+stored in an instance of the named tuple \verb|StackInfo| for every level of
 redirection. The tuple also stores information about the program counter that
-is calculated from the address of the \verb|uSwitch| Assembly routine because a task always ends up in \verb|uSwitch| when its state is blocked. Similarly, the command
+is calculated from the address of the \verb|uSwitch| Assembly function because a task always ends up in \verb|uSwitch| when its state is blocked. Similarly, the command
 also retrieves these context information but from the task that a user wants to switch to, and
 sets the equivalent registers to the new values. In particular, the value of the stack
 pointer is set in \verb|rsp| register, the value of the frame pointer is set in \verb|rbp|
@@ -216,8 +227,8 @@ if not gdb.lookup_symbol('uSwitch'):
     print('uSwitch symbol is not available')
     return
 
-# This value is calculated here beacuse we always here when the task is in
-blocked state
+# This value is calculated here beacuse we always here when the task is
+# in blocked state
 xpc = get_addr(gdb.parse_and_eval('uSwitch').address + 28, 'PC')
 # must switch back to frame-0 to set 'pc' register with
 # the value of xpc
@@ -248,8 +259,10 @@ information. An example of this command can be seen in listing \ref{poptask}.
 
 In addition to implementing these new GDB commands, additional hooks are added
 to existing built-in GDB commands, which are listed in listing
-\ref{continue-cmds} \cite{Reference14}, to allow
-a program to continue executing in any form. These hooks
+\ref{continue-cmds} to allow
+a program to continue executing in any form. The list of these commands
+results from GDB documentation \cite{reference15} and similar work done for KOS
+\cite{reference14}. These hooks
 call a new command called \verb|reset| prior to executing the command to enable
 continuation of a program to ensure that
 the program's context is automatically switched back to the context of the task
@@ -276,27 +289,22 @@ reverse-continue
 reverse-finish
 \end{lstlisting}
 
-\begin{lstlisting}[caption={task <task\_address> command}, label={pushtask}]
+\begin{lstlisting}[caption={task \<task\_address\> command}, label={pushtask}]
 (gdb) info threads
   Id   Target Id         Frame
-* 1    Thread 0x7ffff7fe9780 (LWP 1573) "utils" 0x00007ffff6d79826 in __GI___sigsuspend
-    (set=set@entry=0x73f850) at ../sysdeps/unix/sysv/linux/sigsuspend.c:30
-  2    Thread 0x802080 (LWP 1577) "utils" T::a (this=0xc0b0b0) at utils.cpp:8
-  3    Thread 0x904080 (LWP 1578) "utils" T::a (this=0xc8b7b0) at utils.cpp:8
-  4    Thread 0x984080 (LWP 1579) "utils" T::a (this=0xc4b430) at utils.cpp:8
-  5    Thread 0xa05080 (LWP 1580) "utils" T::a (this=0xa89bb0) at utils.cpp:8
+* 1    Thread 0x7ffff7fe9780 (LWP 704) "utils" 0x000000000042f2ef in uCluster::processorPause (this=0x73f7a8) at /usr/local/u++-7.0.0/src/kernel/uCluster.cc:120
+  2    Thread 0x802080 (LWP 708) "utils" T::a (this=0xa49830) at utils.cpp:7
+  3    Thread 0x904080 (LWP 709) "utils" T::a (this=0xbcad30) at utils.cpp:7
+  4    Thread 0x984080 (LWP 710) "utils" T::a (this=0xb8a9b0) at utils.cpp:7
+  5    Thread 0xa05080 (LWP 711) "utils" UPP::uSigHandlerModule::sigAlrmHandler (sig=10,
+    sfp=0xb864b0, cxt=0xb86380) at /usr/local/u++-7.0.0/src/kernel/uSignal.cc:218
 (gdb) thread 2
 (gdb) bt
-#0  0x00007ffff6d79826 in __GI___sigsuspend (set=set@entry=0x73f850)
-    at ../sysdeps/unix/sysv/linux/sigsuspend.c:30
-#1  0x000000000042f3ff in uCluster::processorPause (
-    this=0x655280 <uKernelModule::systemClusterStorage>)
-    at /usr/local/u++-7.0.0/src/kernel/uCluster.cc:120
-#2  0x000000000041b671 in UPP::uProcessorKernel::main (this=0x703db0)
-    at /usr/local/u++-7.0.0/src/kernel/uProcessor.cc:678
-#3  0x00000000004258e6 in UPP::uMachContext::invokeCoroutine (This=...)
-    at /usr/local/u++-7.0.0/src/kernel/uMachContext.cc:89
-#4  0x0000000000000000 in ?? ()
+#0  T::a (this=0xb0a2b0, param=5) at utils.cpp:8
+#1  0x000000000041cb4c in T::main (this=0xb0a2b0) at utils.cpp:11
+#2  0x0000000000425bbc in UPP::uMachContext::invokeTask (This=...)
+    at /usr/local/u++-7.0.0/src/kernel/uMachContext.cc:140
+#3  0x0000000000000000 in ?? ()
 (gdb) task 0xa49830
 (gdb) bt
 #0  uSwitch () at /usr/local/u++-7.0.0/src/kernel/uSwitch-x86_64.S:64
@@ -312,8 +320,8 @@ reverse-finish
 #5  0x000000000042c0d3 in UPP::uSigHandlerModule::sigAlrmHandler (sig=<optimized out>,
     sfp=<optimized out>, cxt=0xa85300) at /usr/local/u++-7.0.0/src/kernel/uSignal.cc:308
 #6  <signal handler called>
-#7  T::a (this=0xa49830) at utils.cpp:8
-<@\textcolor{ForestGreen}{\#8  0x000000000041cb43 in T::main (this=0xa49830) at utils.cpp:11}@>
+<@\textcolor{ForestGreen}{\#7  T::a (this=0xa49830) at utils.cpp:8}@>
+#8  0x000000000041cb43 in T::main (this=0xa49830) at utils.cpp:11
 #9  0x0000000000425bbc in UPP::uMachContext::invokeTask (This=...)
     at /usr/local/u++-7.0.0/src/kernel/uMachContext.cc:140
 #10 0x0000000000000000 in ?? ()
@@ -322,24 +330,19 @@ reverse-finish
 \begin{lstlisting}[caption={Context switch version of task command}, label={pushtask-id}]
 (gdb) info threads
   Id   Target Id         Frame
-* 1    Thread 0x7ffff7fe9780 (LWP 1573) "utils" 0x00007ffff6d79826 in __GI___sigsuspend
-    (set=set@entry=0x73f850) at ../sysdeps/unix/sysv/linux/sigsuspend.c:30
-  2    Thread 0x802080 (LWP 1577) "utils" T::a (this=0xc0b0b0) at utils.cpp:8
-  3    Thread 0x904080 (LWP 1578) "utils" T::a (this=0xc8b7b0) at utils.cpp:8
-  4    Thread 0x984080 (LWP 1579) "utils" T::a (this=0xc4b430) at utils.cpp:8
-  5    Thread 0xa05080 (LWP 1580) "utils" T::a (this=0xa89bb0) at utils.cpp:8
+* 1    Thread 0x7ffff7fe9780 (LWP 704) "utils" 0x000000000042f2ef in uCluster::processorPause (this=0x73f7a8) at /usr/local/u++-7.0.0/src/kernel/uCluster.cc:120
+  2    Thread 0x802080 (LWP 708) "utils" T::a (this=0xa49830) at utils.cpp:7
+  3    Thread 0x904080 (LWP 709) "utils" T::a (this=0xbcad30) at utils.cpp:7
+  4    Thread 0x984080 (LWP 710) "utils" T::a (this=0xb8a9b0) at utils.cpp:7
+  5    Thread 0xa05080 (LWP 711) "utils" UPP::uSigHandlerModule::sigAlrmHandler (sig=10,
+    sfp=0xb864b0, cxt=0xb86380) at /usr/local/u++-7.0.0/src/kernel/uSignal.cc:218
 (gdb) thread 2
 (gdb) bt
-#0  0x00007ffff6d79826 in __GI___sigsuspend (set=set@entry=0x73f850)
-    at ../sysdeps/unix/sysv/linux/sigsuspend.c:30
-#1  0x000000000042f3ff in uCluster::processorPause (
-    this=0x655280 <uKernelModule::systemClusterStorage>)
-    at /usr/local/u++-7.0.0/src/kernel/uCluster.cc:120
-#2  0x000000000041b671 in UPP::uProcessorKernel::main (this=0x703db0)
-    at /usr/local/u++-7.0.0/src/kernel/uProcessor.cc:678
-#3  0x00000000004258e6 in UPP::uMachContext::invokeCoroutine (This=...)
-    at /usr/local/u++-7.0.0/src/kernel/uMachContext.cc:89
-#4  0x0000000000000000 in ?? ()
+#0  T::a (this=0xb0a2b0, param=5) at utils.cpp:8
+#1  0x000000000041cb4c in T::main (this=0xb0a2b0) at utils.cpp:11
+#2  0x0000000000425bbc in UPP::uMachContext::invokeTask (This=...)
+    at /usr/local/u++-7.0.0/src/kernel/uMachContext.cc:140
+#3  0x0000000000000000 in ?? ()
 (gdb) task userCluster 6
 (gdb) bt
 #0  uSwitch () at /usr/local/u++-7.0.0/src/kernel/uSwitch-x86_64.S:64
@@ -355,8 +358,8 @@ reverse-finish
 #5  0x000000000042c0d3 in UPP::uSigHandlerModule::sigAlrmHandler (sig=<optimized out>,
     sfp=<optimized out>, cxt=0xa85300) at /usr/local/u++-7.0.0/src/kernel/uSignal.cc:308
 #6  <signal handler called>
-#7  T::a (this=0xa49830) at utils.cpp:8
-<@\textcolor{ForestGreen}{\#8  0x000000000041cb43 in T::main (this=0xa49830) at utils.cpp:11}@>
+<@\textcolor{ForestGreen}{\#7  T::a (this=0xa49830) at utils.cpp:8}@>
+#8  0x000000000041cb43 in T::main (this=0xa49830) at utils.cpp:11
 #9  0x0000000000425bbc in UPP::uMachContext::invokeTask (This=...)
     at /usr/local/u++-7.0.0/src/kernel/uMachContext.cc:140
 #10 0x0000000000000000 in ?? ()
@@ -379,23 +382,18 @@ reverse-finish
 #5  0x000000000042c0d3 in UPP::uSigHandlerModule::sigAlrmHandler (sig=<optimized out>,
     sfp=<optimized out>, cxt=0xa85300) at /usr/local/u++-7.0.0/src/kernel/uSignal.cc:308
 #6  <signal handler called>
-#7  T::a (this=0xa49830) at utils.cpp:8
-<@\textcolor{ForestGreen}{\#8  0x000000000041cb43 in T::main (this=0xa49830) at
-utils.cpp:11}@>
+<@\textcolor{ForestGreen}{\#7  T::a (this=0xa49830) at utils.cpp:8}@>
+#8  0x000000000041cb43 in T::main (this=0xa49830) at utils.cpp:11
 #9  0x0000000000425bbc in UPP::uMachContext::invokeTask (This=...)
     at /usr/local/u++-7.0.0/src/kernel/uMachContext.cc:140
 #10 0x0000000000000000 in ?? ()
 (gdb) poptask
 (gdb) bt
-#0  0x00007ffff6d79826 in __GI___sigsuspend (set=set@entry=0x73f850)
-    at ../sysdeps/unix/sysv/linux/sigsuspend.c:30
-#1  0x000000000042f3ff in uCluster::processorPause (this=0x73f7a8)
-    at /usr/local/u++-7.0.0/src/kernel/uCluster.cc:120
-#2  0x000000000041b671 in UPP::uProcessorKernel::main (this=0x703db0)
-    at /usr/local/u++-7.0.0/src/kernel/uProcessor.cc:678
-#3  0x00000000004258e6 in UPP::uMachContext::invokeCoroutine (This=...)
-    at /usr/local/u++-7.0.0/src/kernel/uMachContext.cc:89
-#4  0x0000000000000000 in ?? ()
+<@\textcolour{\#0  T::a (this=0xb0a2b0, param=5) at utils.cpp:8}@>
+#1  0x000000000041cb4c in T::main (this=0xb0a2b0) at utils.cpp:11
+#2  0x0000000000425bbc in UPP::uMachContext::invokeTask (This=...)
+    at /usr/local/u++-7.0.0/src/kernel/uMachContext.cc:140
+#3  0x0000000000000000 in ?? ()
 \end{lstlisting}
 
 \section{Result}
