@@ -48,7 +48,7 @@ types. GDB has three kinds of symbol-tables:
 
 Debugging information for a large program can be very large, and reading all of
 these symbols can be a performance bottlenecks in GDB, affecting the user
-experience. The solution is to construct partial symbol-tables consisting of
+experience. The solution is to lazily construct partial symbol-tables consisting of
 only selected symbols, and then eagerly expand them to full symbol-tables when
 necessary.
 The psymtab is constructed by doing a quick pass over the executable file's

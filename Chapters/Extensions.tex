@@ -3,16 +3,21 @@ When a concurrent program deadlocks, looking at the task call-stack can locate
 the resource and the blocking cycle that resulted in the deadlock. Therefore,
 a reason for having a task tour is to display the call stack of each task to
 know where it is executing and what values it is currently computing. This leads
-to the development of extending GDB.
-\begin{lstlisting}[caption={Call stack of function \textbf{a()} in the \uCPPS program from listing
-\ref{uCPP-src-code}}]
-(gdb) thread 2
-[Switching to thread 2 (Thread 0x802080 (LWP 1577))]
-#0  T::a (this=0xc0b0b0) at utils.cpp:8
-8               while (1);
+to the development of extending GDB. For example, given the \uCPPS program from
+listing \ref{uCPP-src-code}, all information shown in listing
+\ref{uCPP-callstack} is useful to understand the program state.
+
+\begin{lstlisting}[caption={Call stack of function \textbf{a()} in the \uCPPS
+program from listing \ref{uCPP-src-code}}, label={uCPP-callstack}]
 (gdb) i locals
 local_int = 3
 local_str = "example"
+(gdb) bt
+#0  T::a (this=0xc0b0b0) at utils.cpp:8
+#1  0x000000000041cb43 in T::main (this=0xc0b0b0) at utils.cpp:11
+#2  0x0000000000425bbc in UPP::uMachContext::invokeTask (This=...)
+    at /usr/local/u++-7.0.0/src/kernel/uMachContext.cc:140
+#3  0x0000000000000000 in ?? ()
 \end{lstlisting}
 \section{Design Constraints}
 As mentioned in Chapter \ref{GDB}, there are several ways to extend GDB. However,
@@ -28,10 +33,10 @@ to use and versatile.
 Listing \ref{uCPP-src-code} shows a \uCPPS program that implicitly creates two
 clusters, system and user, explicitly creates three processors plus one
 implicit for system and user cluster. Additionally, the program explicitly creates ten tasks on the
-user cluster, plus the implicit system and processor tasks on the system cluster, and
-processor tasks on the user cluster.
+user cluster, plus the implicit system and processor task (uProcessorTask) on the system cluster, and
+processor task (uProcessorTask) on the user cluster.
 
-\begin{lstlisting}[caption={\uCPPS source code used for GDB commands},
+\begin{lstlisting}[style=C++, caption={\uCPPS source code used for GDB commands},
 label={uCPP-src-code}, basicstyle=\small]
 _Task T
 {
@@ -149,7 +154,7 @@ data structures and functions that enables the development of more complex
 operations and saves time on development.
 
 The next extension for displaying information is writing new commands that allow
-stepping from one \uCCS task to another. Two switching approaches are
+stepping from one \uCPPS task to another. Two switching approaches are
 provided: structured and free form. The structured form remembers the task tour in a
 LIFO way, while the free form does not remember the task tour. This semantics means
 at least two commands are needed for the structured form and the free form.
@@ -192,8 +197,8 @@ the command must switch back to the innermost (currently executing) frame first.
     \centering
 \end{figure}
 
-\begin{lstlisting}[language=Python, caption={Abridged \text{push\_task} source
-code}, label={pushtask-code}, fontstyle=\small]
+\begin{lstlisting}[style=Python, caption={Abridged \text{push\_task} source
+code}, label={pushtask-code}, basicstyle=\small]
 # get GDB type of uContext_t*
 uContext_t_ptr_type = gdb.lookup_type('UPP::uMachContext::uContext_t').pointer
 
@@ -248,7 +253,7 @@ continuation of a program to ensure that
 the program's context is automatically switched back to the context of the task
 that initiates the first
 context switch.
-\begin{lstlisting}[caption={\text{pushtask} command}, label={pushtask}]
+\begin{lstlisting}[caption={task <task\_address> command}, label={pushtask}]
 (gdb) info threads
   Id   Target Id         Frame
 * 1    Thread 0x7ffff7fe9780 (LWP 1573) "utils" 0x00007ffff6d79826 in __GI___sigsuspend

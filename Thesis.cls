@@ -145,7 +145,7 @@
 \pdfstringdefDisableCommands{
    \let\\\space
 }
-\lstdefinestyle{c++} {
+\lstdefinestyle{C++nokeyword} {
         language=C++,
         basicstyle=\ttfamily,
         numbers=left,
@@ -154,7 +154,16 @@
         %keywordstyle=\color{blue}\ttfamily,
         stringstyle=\color{red}\ttfamily,
         commentstyle=\color{ForestGreen}\ttfamily,
-        morecomment=[l][\color{magneta}]{\#}
+}
+\lstdefinestyle{C++} {
+        language=C++,
+        basicstyle=\ttfamily,
+        numbers=left,
+        stepnumber=1,
+        firstnumber=1,
+        keywordstyle=\color{blue}\ttfamily,
+        stringstyle=\color{red}\ttfamily,
+        commentstyle=\color{ForestGreen}\ttfamily,
 }
 \lstdefinestyle{Python} {
         language=Python,
@@ -165,7 +174,6 @@
         keywordstyle=\color{blue}\ttfamily,
         stringstyle=\color{red}\ttfamily,
         commentstyle=\color{ForestGreen}\ttfamily,
-        morecomment=[l][\color{magneta}]{\#}
 }
 
 \newcommand*{\supervisor}[1]{\def\supname{#1}}
