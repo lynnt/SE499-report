@@ -247,12 +247,35 @@ address of the last task it was switched from, and sets the same set of register
 information. An example of this command can be seen in listing \ref{poptask}.
 
 In addition to implementing these new GDB commands, additional hooks are added
-to existing built-in GDB commands that continue the execution of a program in any form. These hooks
+to existing built-in GDB commands, which are listed in listing
+\ref{continue-cmds} \cite{Reference14}, to allow
+a program to continue executing in any form. These hooks
 call a new command called \verb|reset| prior to executing the command to enable
 continuation of a program to ensure that
 the program's context is automatically switched back to the context of the task
-that initiates the first
-context switch.
+that initiates the first context switch. The \verb|reset| command behaves as
+same as the command \verb|poptask|, however, it goes back directly to where the
+task is when the program last stops, which is the first task in the task tour.
+
+\begin{lstlisting}[caption={Built-in GDB commands that allow continuation of a
+program}, label={continue-cmds}]
+continue
+next
+nexti
+step
+stepi
+finish
+advance
+jump
+signal
+until
+reverse-next
+reverse-step
+reverse-stepi
+reverse-continue
+reverse-finish
+\end{lstlisting}
+
 \begin{lstlisting}[caption={task <task\_address> command}, label={pushtask}]
 (gdb) info threads
   Id   Target Id         Frame
