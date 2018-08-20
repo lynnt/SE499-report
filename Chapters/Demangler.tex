@@ -1,44 +1,44 @@
 \chapter{\CFAS Demangler} \label{demangler}
 
-\section{Design Constraints}
-While \CFAS is a translator for additional features that C does not support, all
-the code during the compilation phase is eventually compiled down to C code.
-The resulting executable file marks the DWARF tag \verb|DW_AT_language| with the
-fixed hexadecimal value for the C language. Because it is possible to have one frame in C code and another
+\section{Introduction}
+While \CFAS is a translator for additional features that C does not support,
+all the extensions compiled down to C code.  As a result, the executable file
+marks the DWARF tag \verb|DW_AT_language| with the fixed hexadecimal value for
+the C language. Because it is possible to have one frame in C code and another
 frame in Assembly code, GDB encodes a language flag for each frame. \CFAS adds
 to this list, as it is essential to know when a stack frame contains mangled
-names versus C and assembler unmangled names. Thus, the first requirement is
-making GDB understands \CFAS as distinct a source language.
+names versus C and assembler unmangled names. Thus, GDB must be told \CFAS is a
+distinct source-language.
 
-Next, there is a DWARF reader component in GDB since most GDB targets use the DWARF
-format. The DWARF reader sets all the appropriate information read from object or
-executable files in DIE structures within GDB as mentioned in Chapter
-\ref{GDB}. However, GDB currently does not understand the DWARF language code
-assigned to the
-language \CFA, so another requirement is updating the DWARF reader in GDB to
-recognize \CFA.
+\section{Design Constraints}
+Most GDB targets use the DWARF format.  The GDB DWARF reader initializes all
+the appropriate information read from the DIE structures in object or
+executable files, as mentioned in Chapter \ref{GDB}. However, GDB currently
+does not understand the new DWARF language-code assigned to the language \CFA,
+so the DWARF reader must be updated to recognize \CFA.
 
 Additionally, when a user enters a name into GDB, GDB needs to lookup if the
 name exists in the program. However, different languages may have different
 hierarchical structure for dynamic scope, so an implementation for nonlocal
-symbol lookup is required.
+symbol lookup is required, so an appropriate name lookup routine must be added.
 
-\section{Design Implementation}
+\section{Implementation}
 Most of the implementation work discussed below is from reading GDB's internals
-wiki page and understanding how other languages are supported in GDB \cite{reference5}.
+wiki page and understanding how other languages are supported in GDB \cite{Reference5}.
 
 A new entry is added to GDB's list of language definition in
 \verb|gdb/defs.h|. Hence, a new instance of type \verb|struct language_def|
-must be created to add a language definition of \CFAS. This instance is the
+must be created to add a language definition for \CFAS. This instance is the
 entry point for new functions that are only applicable to \CFA. These new
-functions are invoked by GDB during debugging if there are operations that
-are applicable specifically to \CFA. For instance, \CFAS can implement its
-own symbol lookup function for non-local variables because \CFAS can have a
-different scope hierarchy. The final step for registering \CFAS in GDB, as a new
-source language, is adding the instance of type \verb|struct language_def| into
-the list of language definitions, which can be found in
+functions are invoked by GDB during debugging if there are operations that are
+applicable specifically to \CFA. For instance, \CFAS can implement its own
+symbol lookup function for non-local variables because \CFAS can have a
+different scope hierarchy. The final step for registering \CFAS in GDB, as a
+new source language, is adding the instance of type \verb|struct language_def|
+into the list of language definitions, which is found in
 \verb|gdb/language.h|. This setup is shown in listing \ref{cfa-lang-def}.
 
+\begin{figure}
 \begin{lstlisting}[style=C++, caption={Language definition declaration for
 \CFA}, label={cfa-lang-def}, basicstyle=\small]
 // In gdb/language.h
@@ -54,9 +54,8 @@ static const struct language_defn *languages[] = {
     ...
  }
 
- // In gdb/cforall-lang.c
-extern const struct language_defn cforall_language_defn =
-{
+// In gdb/cforall-lang.c
+extern const struct language_defn cforall_language_defn = {
     "cforall",                      /* Language name */
     "CForAll",                      /* Natural name */
     language_cforall,
@@ -70,78 +69,67 @@ extern const struct language_defn cforall_language_defn =
     ..
 }
 \end{lstlisting}
+\end{figure}
 
-The next step is updating the DWARF reader, so the reader can translate the DWARF code to an enum value defined
-above. However, this assumes that the language has an assigned language code.
-The language code is a hexadecimal literal value assigned to a particular
-language, which is maintained by GCC. For \CFA, the hexidecimal value
-\verb|0x0025| is added to \verb|include/dwarf2.h| to denote \CFA, which is shown
-in listing \ref{cfa-dwarf}.
-
+The next step is updating the DWARF reader, so the reader can translate the
+DWARF code to an enum value defined above. However, this assumes that the
+language has an assigned language code.  The language code is a hexadecimal
+literal value assigned to a particular language, which is maintained by
+GCC. For \CFA, the hexadecimal value \verb|0x0025| is added to
+\verb|include/dwarf2.h| to denote \CFA, which is shown in listing
+\ref{cfa-dwarf}.
 \begin{lstlisting}[style=C++, caption={DWARF language code for \CFA},
 label={cfa-dwarf}, basicstyle=\small]
 // In include/dwarf2.h
-/* Source language names and codes.  */
-enum dwarf_source_language
-{
+enum dwarf_source_language { // Source language names and codes.
     DW_LANG_C89 = 0x0001,
     ...
     DW_LANG_CForAll = 0x0025,
 }
 \end{lstlisting}
 
-Once the demangler implementation goes into the \verb|libiberty| directory along with
-other demanglers, the demangler can be called by updating the language
-definition defined in listing \ref{cfa-lang-def} with the entry point of the
-\CFAS demangler, and adding a check if the current demangling style is
+Once the demangler implementation goes into the \verb|libiberty| directory
+along with other demanglers, the demangler can be called by updating the
+language definition defined in listing \ref{cfa-lang-def} with the entry point
+of the \CFAS demangler, and adding a check if the current demangling style is
 \verb|CFORALL_DEMANGLING| as seen in listing \ref{cfa-demangler}. GDB then
-automatically invokes this \CFAS demangler
-when GDB detects the source language is \CFA. In addition to the automatic
-invocation of the demangler, GDB provides an option
-to manually set which demangling style to use in the command line interface.
-This option can be turned on for \CFAS in GDB by adding a new enum value for \CFAS in
-the list of demangling styles along with setting the appropriate mask for this
-style in \verb|include/demangle.h|. After doing this step, users can now choose
-if they want to use the \CFAS demangler in GDB by calling \verb|set demangle-style <language>|, where the language name is defined as the
-preprocessor macro \verb|CFORALL_DEMANGLING_STYLE_STRING| in listing
-\ref{cfa-demangler-style}.
+automatically invokes this \CFAS demangler when GDB detects the source language
+is \CFA. In addition to the automatic invocation of the demangler, GDB provides
+an option to manually set which demangling style to use in the command line
+interface.  This option can be turned on for \CFAS in GDB by adding a new enum
+value for \CFAS in the list of demangling styles along with setting the
+appropriate mask for this style in \verb|include/demangle.h|. After doing this
+step, users can now choose if they want to use the \CFAS demangler in GDB by
+calling \verb|set demangle-style <language>|, where the language name is
+defined by the preprocessor macro \verb|CFORALL_DEMANGLING_STYLE_STRING| in
+listing \ref{cfa-demangler-style}.
 
+\begin{figure}
 \begin{lstlisting}[style=C++, caption={libiberty setup for the \CFAS demangler},
 label={cfa-demangler}, basicstyle=\small]
 // In libiberty/cplus-dem.c
-const struct demangler_engine libiberty_demanglers[] =
-{
+const struct demangler_engine libiberty_demanglers[] = {
     {
         NO_DEMANGLING_STYLE_STRING,
         no_demangling,
         "Demangling disabled"
-    }
-    ,
+    },
     ...
     {
         CFORALL_DEMANGLING_STYLE_STRING,
         cforall_demangling,
         "Cforall style demangling"
     },
-    ...
 }
 ...
-char *
-cplus_demangle (const char *mangled, int options)
-{
+char * cplus_demangle(const char *mangled, int options) {
     ...
     /* The V3 ABI demangling is implemented elsewhere.  */
-    if (GNU_V3_DEMANGLING || RUST_DEMANGLING || AUTO_DEMANGLING)
-    {
-        ...
-    }
+    if (GNU_V3_DEMANGLING || RUST_DEMANGLING || AUTO_DEMANGLING) { ... }
     ...
-    if (CFORALL_DEMANGLING)
-    {
+    if (CFORALL_DEMANGLING) {
         ret = cforall_demangle (mangled, options);
-        if (ret) {
-            return ret;
-        }
+        if (ret) { return ret; }
     }
 }
 \end{lstlisting}
@@ -151,51 +139,45 @@ label={cfa-demangler-style}, basicstyle=\small]
 // In gdb/demangle.h
 #define DMGL_CFORALL (1 << 18)
 ...
-/* If none of these are set, use 'current_demangling_style' as the default. */
+/* If none are set, use 'current_demangling_style' as the default. */
 #define DMGL_STYLE_MASK
 (DMGL_AUTO|DMGL_GNU|DMGL_LUCID|DMGL_ARM|DMGL_HP|DMGL_EDG|DMGL_GNU_V3
 |DMGL_JAVA|DMGL_GNAT|DMGL_DLANG|DMGL_RUST|DMGL_CFORALL)
 ...
-extern enum demangling_styles
-{
+extern enum demangling_styles {
     no_demangling = -1,
     unknown_demangling = 0,
     ...
     cforall_demangling = DMGL_CFORALL
 } current_demangling_style;
 ...
-#define CFORALL_DEMANGLING_STYLE_STRING          "cforall"
+#define CFORALL_DEMANGLING_STYLE_STRING  "cforall"
 ...
-#define CFORALL_DEMANGLING (((int) CURRENT_DEMANGLING_STYLE) & DMGL_CFORALL)
+#define CFORALL_DEMANGLING (((int)CURRENT_DEMANGLING_STYLE)&DMGL_CFORALL)
 \end{lstlisting}
+\end{figure}
 
 However, the setup for the \CFAS demangler above does not demangle mangled
-symbols during symbol-table lookup while the program is in progress. Therefore, additional work needs to be done in
-\verb|gdb/symtab.c|. Prior to looking up the symbol, GDB attemps to demangle
-the name of the symbol, which can either be mangled or unmangled name, to see
-if it can detect the language, and select the appropriate demangler to demangle the symbol. This work
-enables invocation of the \CFAS demangler during symbol lookup.
+symbols during symbol-table lookup while the program is in progress. Therefore,
+additional work needs to be done in \verb|gdb/symtab.c|. Prior to looking up
+the symbol, GDB attempts to demangle the name of the symbol, which can either
+be a mangled or unmangled name, to see if it can detect the language, and select
+the appropriate demangler to demangle the symbol. This work enables invocation
+of the \CFAS demangler during symbol lookup.
 \begin{lstlisting}[style=C++, caption={\CFAS demangler setup for symbol lookup},
 label={cfa-symstab-setup}, basicstyle=\small]
 // In gdb/symtab.c
-const char *
-demangle_for_lookup (
-    const char *name,
-    enum language lang,
-    demangle_result_storage &storage
-    )
-{
-    /* If we are using C++, D, or Go, demangle the name before doing a
-    lookup, so we can always binary search.  */
-    if (lang == language_cplus)
-    {
-        char *demangled_name = gdb_demangle (name, DMGL_ANSI | DMGL_PARAMS);
+const char * demangle_for_lookup ( const char *name, enum language lang,
+                                   demangle_result_storage &storage ) {
+    /* When using C++, D, or Go, demangle the name before doing a
+       lookup to use the binary search. */
+    if (lang == language_cplus) {
+        char *demangled_name = gdb_demangle(name, DMGL_ANSI|DMGL_PARAMS);
         if (demangled_name != NULL)
             return storage.set_malloc_ptr (demangled_name);
     }
     ...
-    else if (lang == language_cforall)
-    {
+    else if (lang == language_cforall) {
         char *demangled_name = cforall_demangle (name, 0);
         if (demangled_name != NULL)
             return storage.set_malloc_ptr (demangled_name);
@@ -206,8 +188,8 @@ demangle_for_lookup (
 
 \section{Result}
 The addition of hooks throughout GDB enables the invocation of the new \CFAS
-demangler during symbol lookup and during the usage of binutils tools such as
-objdump, nm. Additionally, these binutils tools also understand \CFAS because
-of the addition of the \CFAS language code. However, as the
-language develops, symbol lookup for non-local variables must be implemented to
-produce the correct output.
+demangler during symbol lookup and during the usage of \verb|binutils| tools
+such as \verb|objdump| and \verb|nm|. Additionally, these \verb|binutils| tools
+also understand \CFAS because of the addition of the \CFAS language code.
+However, as the language develops, symbol lookup for non-local variables must
+be implemented to produce the correct output.

@@ -1,12 +1,10 @@
 \chapter{Conclusion}
-New extensions are written to support information display and touring among
-\uCPPS user tasks, and
-new hooks are added to the GNU
-Debugger to support \CFAS demangler. The extensions are implemented using the Python API and hooks to add debugging support for a
-new source language. In particular, writing Python extensions is easier and more
-robust. The usage of the Python language enables writing of
-more complex operations with built-in data structures and functions.
-Furthermore, GDB provides sufficient hooks to make it easier for a new language to leverage existing
-infrastructure and codebase to add debugging support. The result provided
-significantly new capabilities for examining and debugging both \uCPPS and \CFAS
-programs.
+New GDB extensions are created to support information display and touring among
+\uCPPS user tasks, and new hooks are added to the GNU Debugger to support a
+\CFAS demangler. The GDB extensions are implemented using the Python API, and
+the hooks to add debugging support for \CFAS are implemented using \uCPPS. For
+the GDB extensions, writing Python extensions is easier and more robust.
+Furthermore, GDB provides sufficient hooks to make it possible for a new
+language to leverage existing infrastructure and codebase to add debugging
+support. The result provides significantly new capabilities for examining and
+debugging both \uCPPS and \CFAS programs.

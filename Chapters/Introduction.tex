@@ -1,7 +1,7 @@
 \chapter{Introduction} \label{introduction}
 Computer programming languages provide humans a means to instruct computers to
 perform a particular task. New programming languages are
-invented to simplify the task, or provide additional features enhance
+invented to simplify the task, or provide additional features, enhance
 performance, and improve developer productivity.
 
 A crucial companion tool to a programming language is a debugger. A debugger is a productivity tool to aid developers in testing
@@ -10,7 +10,11 @@ any program written in one of a supported set of languages and allows developers
 to stop, monitor and examine state in the program for further investigation.
 
 Specifically, this report talks about how to add GNU Debugger (GDB) support for the
-programming languages \uCPPS and \CFA.
+concurrent programming-languages \uCPPS and \CFA.
+Both languages provide an $M$:$N$ concurrency model, where $M$ user-level threads
+execute on $N$ kernel-level threads.
+Often debuggers either do not know about concurrency or only provide a simple
+understanding of concurrency provided by the operating system (kernel threads).
 For \CFA, new hooks are also added to allow GDB to understand that
 \CFAS is a new source language that requires invocation of a demangler for
 variable and function names.
@@ -23,13 +27,41 @@ these objects or the runtime environment. One objective of this
 project is to write new GDB extensions to understand concurrency among tasks, a new high-level execution construct that is discussed more in Chapter \ref{uCPP}.
 
 Additionally, if a programming language provides overloading functionality,
-which is allowing functions or variables in the same scope with the
+which allows functions or variables in the same scope with the
 same identifier, then each of these entities must be assigned a unique name, otherwise,
 there are name collisions.
-Name mangling is a technique used in compilers to resolve this
-problem. This technique provides a mechanism to encode additional information in the
-name of a function, or a variable to supply more semantic information from
-compiler to debugger \cite{reference9}. \CFA, a new language being developed at the University of
-Waterloo, has overloading, so names resolved from
-the debugger are mangled names. As with early versions of \CC, it is not user-friendly to debug a program using
-mangled names. Therefore, another objective of this project is to add a \CFAS demangler in GDB.
+
+However, uniquely numbering (naming) overloads is impossible with separate
+compilation, because the compiler does not have access to all translation
+units. Therefore, it is necessary to adopt a scheme related to the overloading
+mechanism for unique naming. For example, if a language uses the number and
+types of function parameters to disambiguate function names, than the number
+and parameter types are encoded into the name:
+\begin{lstlisting}[basicstyle=\normalfont\tt]
+void f( int i, double d, char c );  // f_3_i_d_c
+void f( int i, char c );            // f_2_i_c
+\end{lstlisting}
+Here, the mangled names for \lstinline@f@ contain the number of parameters and a code for
+each parameter type. For a complex type-system, the type codes become
+correspondingly complex, e.g., a generic structure. These names are now unique
+across all translation units.
+
+Unfortunately, a debugger only has access to the mangled names in a compiled
+translation units, versus the unmangled names in the program.  Therefore, the
+debugger can only look up mangled names versus original program names, which
+makes debugging extremely difficult for programmers. To solve this program, the
+language must provide the debugger with a "demangled" so it can convert
+mangled names back to program names, and correspondingly retrieve the type of
+the name. \cite{Reference9}
+
+\CFA, a new language being developed at the University of Waterloo, has
+overloading, so names resolved by the debugger are mangled names. Therefore,
+another objective of this project is to add a \CFAS demangler to GDB.
+
+% Name mangling is a technique used in compilers to resolve this
+% problem. This technique provides a mechanism to encode additional information in the
+% name of a function, or a variable to supply more semantic information from
+% compiler to debugger \cite{Reference9}. \CFA, a new language being developed at the University of
+% Waterloo, has overloading, so names resolved from
+% the debugger are mangled names. As with early versions of \CC, it is not user-friendly to debug a program using
+% mangled names. Therefore, another objective of this project is to add a \CFAS demangler in GDB.

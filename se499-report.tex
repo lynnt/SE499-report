@@ -13,17 +13,10 @@
 \usepackage[pagewise]{lineno}
 \usepackage{listings}
 \hypersetup{urlcolor=blue, colorlinks=true}  % Colours hyperlinks in blue, but this can be distracting if there are many links.
-\usepackage{geometry}
-\geometry{
-      letterpaper,
-        left=1.5in,top=1in,right=1.0in,bottom=1in,footskip=1cm,
-          headheight=20pt,headsep=0.25in,foot=9pt,
-            includeheadfoot
-}
 %% ----------------------------------------------------------------
 \begin{document}
 \frontmatter      % Begin Roman style (i, ii, iii, iv...) page numbering
-\linenumbers    % TODO: remove this please
+%\linenumbers    % TODO: remove this please
 % Set up the Title Page
 \title{GNU Debugger support for \uCPPS and \CFA}
 \authors  {\texorpdfstring
@@ -76,8 +69,8 @@ are provided in the report.
 
 I would like to thank Professor Peter Buhr and Thierry
 Delisle for their guidance throughout the development of this project. The
-GNU Debugger's internal manual \cite{reference5} is used as a guide for the development of
-adding a demangler for \CFA, and \CFA's main page \cite{reference13} for
+GNU Debugger's internal manual \cite{Reference5} is used as a guide for the development of
+adding a demangler for \CFA, and \CFA's main page \cite{Reference13} for
 background knowledge and examples.
 }
 \clearpage  % End of the Acknowledgements
@@ -167,7 +160,6 @@ background knowledge and examples.
 
 \appendix % Cue to tell LaTeX that the following 'chapters' are Appendices
 
-% TODO: remove if want appendex
 %\input{Appendices/AppendixA}	% Appendix Title
 
 %\input{Appendices/AppendixB} % Appendix Title

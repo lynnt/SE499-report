@@ -56,7 +56,7 @@
 \usepackage{setspace}
 %\onehalfspacing
 % TODO: please turn this back on
-%\doublespacing
+\doublespacing
 \setlength{\parindent}{0pt}
 \setlength{\parskip}{2.0ex plus0.5ex minus0.2ex}
 \iffalse
@@ -77,6 +77,13 @@
 \widowpenalty=9999                % Almost no widows at bottom of page.
 \clubpenalty=9999                 % Almost no orphans at top of page.
 \interfootnotelinepenalty=9999    % Almost never break footnotes.
+\usepackage{geometry}
+\geometry{
+      letterpaper,
+        left=1.5in,top=1in,right=1.0in,bottom=1in,footskip=1cm,
+          headheight=20pt,headsep=0.25in,footheight=9pt,
+            includeheadfoot
+}
 \usepackage{fancyhdr}
 \lhead[\rm\thepage]{\fancyplain{}{\sl{\rightmark}}}
 \rhead[\fancyplain{}{\sl{\leftmark}}]{\rm\thepage}

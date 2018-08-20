@@ -1,30 +1,32 @@
 \chapter{\CFA} \label{CFA}
+
+\section{Introduction}
 Similar to \CC, C is a popular programming language especially in systems
 programming. For example, the Windows NT and Linux kernel are written in C, and they are the foundation of many higher level
 and popular projects. Therefore, it is unlikely that the programming language C is
 going to disappear any time soon.
 
 However, C has inherent problems in syntax, semantics and many
-more \cite{reference2}. Even though \CCS is meant to fix these problems, \CCS has many
+more \cite{Reference2}. Even though \CCS is meant to fix these problems, \CCS has many
 irreversible legacy design choices, and newer versions of \CCS require significantly more effort to convert C-based projects into \CC.
 
 To solve this problem, the programming language \CFAS is being created at the University of Waterloo. The goal
 of the language is to extend C with modern language features that many new
-languages have such as Rust and Go. This extension provides a
+languages have, such as Rust and Go. Hence, the \CFAS extension provides a
 backward-compatible version of C, while fixing existing problems known in C and
 modernizing the language at the same time.
 
 \section{Overloading}
 Overloading is when a compiler permits a name to have multiple meanings. All
 programming languages allow simple overloading of operators on basic types such
-as + sign on integer and floating point types. Most programming languages extend
+as the \verb|+| operator (add) on integer and floating-point types. Most programming languages extend
 overloading of operators to user-defined types and/or general function
 overloading. \CFAS also supports overloading of variables and the literals \verb|0/1|.
 
 \subsection{Variable}
 Variables in the same block are allowed to have the same name but different
 types. An assignment to a new variable uses that variable's type to infer the
-required type, and that type is used to select a variable containing the approriate type.
+required type, and that type is used to select a variable containing the appropriate type.
 
 \begin{lstlisting}[style=C++nokeyword, caption={Overloading variables in \CFA}, label={CFA-overload-var}]
 short int MAX = SHRT_MAX;
