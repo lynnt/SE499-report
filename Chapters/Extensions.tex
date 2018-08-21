@@ -78,6 +78,8 @@ recursion for one of the tasks created in the \uCPPS program in listing
 three calls to function \verb|a|, started in the task's \verb|main|. The top
 two frames are administrative frames from \uCPP. The values of the argument and
 local variables are printed.
+
+\begin{figure}
 \begin{lstlisting}[caption={Call stack of function \texttt{a} in the \uCPPS
 program from listing \ref{uCPP-src-code}}, label={uCPP-callstack}, basicstyle=\small\tt]
 (gdb) backtrace
@@ -95,23 +97,27 @@ param = 0
 x = 3
 y = "example"
 \end{lstlisting}
+\end{figure}
 
 \subsection{Listing all clusters in a \uCPPS program}
 Listing \ref{clusters-command} shows the new command \verb|clusters| to list
 all program clusters along with their associated address.  The output shows the
 two \uCPPS implicitly created clusters.
+\begin{figure}
 \begin{lstlisting}[caption={clusters command}, label={clusters-command}, basicstyle=\small\tt]
 (gdb) clusters
         Name            Address
     systemCluster       0x655280
     userCluster         0x7c4280
 \end{lstlisting}
+\end{figure}
 
 \subsection{Listing all processors in a cluster}
 Listing \ref{cluster-procs} shows the new command \verb|processors|, which
 requires a cluster argument to show all the processors in that cluster. In
 particular, this example shows that there are four processors in the
 \verb|userCluster|, with their associated address, PID, preemption and spin.
+\begin{figure}
 \begin{lstlisting}[caption={processors command}, label={cluster-procs}, basicstyle=\small\tt]
 (gdb) processors userCluster
     Address    PID         Preemption      Spin
@@ -120,10 +126,12 @@ particular, this example shows that there are four processors in the
     0x8c3d20    9977984     10              1000
     0x8c3ee0    10506368    10              1000
 \end{lstlisting}
+\end{figure}
 
 \subsection{Listing all tasks in all clusters}
 Listing \ref{tasks} shows the new command \verb|task| without an argument to
 list all the tasks in a \uCPPS program at this point in the execution snapshot.
+\begin{figure}
 \begin{lstlisting}[caption={task command for displaying all tasks for all
 clusters}, label={tasks}, basicstyle=\small\tt]
 (gdb) task
@@ -143,18 +151,21 @@ clusters}, label={tasks}, basicstyle=\small\tt]
     ...
     15      T9                  0xc8b7b0        uBaseTask::Ready
 \end{lstlisting}
+\end{figure}
 
 \subsection{Listing all tasks in a cluster}
 Listing \ref{cluster-tasks} shows the new command \verb|task| with a cluster
 argument to list only the names of the tasks on that cluster.  In this version
 of the command \verb|task|, the associated address for each task and its state
 is displayed.
+\begin{figure}
 \begin{lstlisting}[caption={task command for displaying all tasks in a cluster}, label={cluster-tasks}, basicstyle=\small\tt]
 (gdb) task systemCluster
     ID          Name            Address         State
     0       uProcessorTask      0x654200        uBaseTask::Blocked
     1       uSystemTask         0x7c3280        uBaseTask::Blocked
 \end{lstlisting}
+\end{figure}
 
 \section{Changing Stacks}
 The next extension for displaying information is writing new commands that allow
